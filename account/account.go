@@ -35,25 +35,39 @@ func CreateAccount() {
 	var verifyPassword int
 	var confirmPassword int
 	var err error
+
 	// we need to find a better way to handle the error.
 	fmt.Println("Enter your name: ")
-	fmt.Scanln(&user.Name)
+  if _,err = fmt.Scanln(&user.Name); err != nil {
+    fmt.Println("Error: ", err)
+    return
+  }
+
 	fmt.Println("Enter your password: ")
-	_, err = fmt.Scanln(&verifyPassword)
+	if _, err = fmt.Scanln(&verifyPassword); err != nil {
+    fmt.Println("Error: ", err)
+    return
+  }
+
 	fmt.Println("Confirm your password: ")
-	_, err = fmt.Scanln(&confirmPassword)
+	if _, err = fmt.Scanln(&confirmPassword); err != nil {
+    fmt.Println("Error: ", err)
+    return
+  }
+
 	if verifyPassword != confirmPassword {
 		fmt.Println("Passwords do not match!")
 		return
 	} else {
 		user.password = verifyPassword
 	}
+
 	fmt.Println("Enter your initial deposit: ")
-	_, err = fmt.Scanln(&user.Balance)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
+	if _, err = fmt.Scanln(&user.Balance); err != nil {
+    fmt.Println("Error: ", err)
+    return
+  }
+
 	// this model is complicated.
 	user.AccountNumber = rand.Int63n(1000000000000000)
 	insertDB(connectDB(), user)
