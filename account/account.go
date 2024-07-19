@@ -1,9 +1,8 @@
 package account
 
 import (
-	_ "database/sql"
+	"database/sql"
 	"fmt"
-
 	"math/rand"
 )
 
@@ -14,7 +13,16 @@ type Account struct {
 	password      int
 }
 
-func insertDB(user Account) {
+func connectDB() *sql.DB {
+	// Connect to database.
+	db, err := sql.Open("sqlite3", "./dummy.db")
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	return db
+}
+
+func insertDB(db *sql.DB, user Account) {
 	// Insert into database.
 }
 
@@ -26,52 +34,40 @@ func CreateAccount() {
 	var user Account
 	var verifyPassword int
 	var confirmPassword int
-
 	var err error
-
+	// we need to find a better way to handle the error.
 	fmt.Println("Enter your name: ")
 	fmt.Scanln(&user.Name)
-
 	fmt.Println("Enter your password: ")
 	_, err = fmt.Scanln(&verifyPassword)
 	fmt.Println("Confirm your password: ")
 	_, err = fmt.Scanln(&confirmPassword)
-
 	if verifyPassword != confirmPassword {
 		fmt.Println("Passwords do not match!")
 		return
 	} else {
 		user.password = verifyPassword
 	}
-
 	fmt.Println("Enter your initial deposit: ")
 	_, err = fmt.Scanln(&user.Balance)
-
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
-  
-  // Generate a random account number.
-  user.AccountNumber = rand.Int63n(1000000000000000)
-
-	insertDB(user)
-
+	// this model is complicated.
+	user.AccountNumber = rand.Int63n(1000000000000000)
+	insertDB(connectDB(), user)
 	fmt.Println("Account created successfully!")
 }
 
 func CheckBalance() {
 	var accountNumber int32
 	var password int
-
 	fmt.Println("Enter your account number: ")
 	fmt.Scanln(&accountNumber)
-
 	fmt.Println("Enter your password: ")
 	fmt.Scanln(&password)
-
 	fetchDB(accountNumber, password)
-
 	fmt.Println("Your balance is: ")
 }
 
