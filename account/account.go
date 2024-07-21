@@ -13,6 +13,17 @@ type Account struct {
 	password      int
 }
 
+func CreateAccount() {
+  var user Account
+  user.Name = getUserName()
+  user.password = getPassword()
+  user.Balance = getInitialDeposit()
+  user.AccountNumber = getAccountNumber()
+
+	insertDB(connectDB(), user)
+	fmt.Println("Account created successfully!")
+}
+
 func getUserName() string {
 	fmt.Println("Enter your name: ")
   scanner := bufio.NewScanner(os.Stdin)
@@ -51,17 +62,6 @@ func getInitialDeposit() float64 {
 
 func getAccountNumber() int64 {
   return 1234567890 
-}
-
-func CreateAccount() {
-  var user Account
-  user.Name = getUserName()
-  user.password = getPassword()
-  user.Balance = getInitialDeposit()
-  user.AccountNumber = getAccountNumber()
-
-	insertDB(connectDB(), user)
-	fmt.Println("Account created successfully!")
 }
 
 func CheckBalance() {
