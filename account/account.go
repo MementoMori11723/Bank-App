@@ -1,9 +1,9 @@
 package account
 
 import (
-	"database/sql"
+	"bufio"
 	"fmt"
-	"math/rand"
+	"os"
 )
 
 type Account struct {
@@ -13,63 +13,53 @@ type Account struct {
 	password      int
 }
 
-func connectDB() *sql.DB {
-	// Connect to database.
-	db, err := sql.Open("sqlite3", "./dummy.db")
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
-	return db
+func getUserName() string {
+	fmt.Println("Enter your name: ")
+  scanner := bufio.NewScanner(os.Stdin)
+  scanner.Scan()
+  return scanner.Text()
 }
 
-func insertDB(db *sql.DB, user Account) {
-	// Insert into database.
+func handlePassword(password int) int {
+  if password < 1000 && password > 9999 {
+    fmt.Println("Password must be at least 4 digits. Please try again.")
+    return getPassword()
+  }
+  fmt.Println("Confirm your password: ")
+  var confirmPassword int
+  fmt.Scanln(&confirmPassword)
+  if password != confirmPassword {
+    fmt.Println("Passwords do not match. Please try again.")
+    return getPassword()
+  }
+  return password
 }
 
-func fetchDB(accountNumber int32, password int) {
-	// Fetch from database.
+func getPassword() int {
+  fmt.Println("Enter your password: ")
+  var password int
+  fmt.Scanln(&password)
+  return handlePassword(password)
+}
+
+func getInitialDeposit() float64 {
+  fmt.Println("Enter the amount you want to deposit: ")
+  var deposit float64
+  fmt.Scanln(&deposit)
+  return deposit
+}
+
+func getAccountNumber() int64 {
+  return 1234567890 
 }
 
 func CreateAccount() {
-	var user Account
-	var verifyPassword int
-	var confirmPassword int
-	var err error
+  var user Account
+  user.Name = getUserName()
+  user.password = getPassword()
+  user.Balance = getInitialDeposit()
+  user.AccountNumber = getAccountNumber()
 
-	// we need to find a better way to handle the error.
-	fmt.Println("Enter your name: ")
-  if _,err = fmt.Scanln(&user.Name); err != nil {
-    fmt.Println("Error: ", err)
-    return
-  }
-
-	fmt.Println("Enter your password: ")
-	if _, err = fmt.Scanln(&verifyPassword); err != nil {
-    fmt.Println("Error: ", err)
-    return
-  }
-
-	fmt.Println("Confirm your password: ")
-	if _, err = fmt.Scanln(&confirmPassword); err != nil {
-    fmt.Println("Error: ", err)
-    return
-  }
-
-	if verifyPassword != confirmPassword {
-		fmt.Println("Passwords do not match!")
-		return
-	} else {
-		user.password = verifyPassword
-	}
-
-	fmt.Println("Enter your initial deposit: ")
-	if _, err = fmt.Scanln(&user.Balance); err != nil {
-    fmt.Println("Error: ", err)
-    return
-  }
-
-	// this model is complicated.
-	user.AccountNumber = rand.Int63n(1000000000000000)
 	insertDB(connectDB(), user)
 	fmt.Println("Account created successfully!")
 }
