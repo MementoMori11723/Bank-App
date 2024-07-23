@@ -22,7 +22,21 @@ func connectDB() *sql.DB {
 	return db
 }
 
-func insertDB(db *sql.DB, user Account) {
+func verifyAccountNumber(accountNumber int64) (bool, error) {
+  // Verify account number.
+  if accountNumber != 0 {
+    return true, nil
+  }
+  return false, nil
+}
+
+func insertDB(user Account) {
+  db := connectDB()
+  db.Exec(
+    "INSERT INTO account (Name, password, Balance, AccountNumber) VALUES (?, ?)", 
+    user.Name, user.password, user.Balance, user.AccountNumber,
+  )
+  defer db.Close()
 	fmt.Println("Account inserted successfully!")
   fmt.Println("Name: ", user.Name)
   fmt.Println("Password: ", user.password)

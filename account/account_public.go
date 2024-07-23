@@ -18,7 +18,7 @@ func CreateAccount() {
   user.Balance = getInitialDeposit()
   user.AccountNumber = getAccountNumber()
 
-	insertDB(connectDB(), user)
+	insertDB(user)
 	fmt.Println("Account created successfully!")
 }
 
