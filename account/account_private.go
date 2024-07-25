@@ -22,7 +22,9 @@ func handlePassword(password int) int {
 	}
 	fmt.Println("Confirm your password: ")
 	var confirmPassword int
-	fmt.Scanln(&confirmPassword)
+  scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+  confirmPassword, _ = strconv.Atoi(scanner.Text())
 	if password != confirmPassword {
 		fmt.Println("Passwords do not match. Please try again.")
 		return getPassword()
@@ -33,14 +35,18 @@ func handlePassword(password int) int {
 func getPassword() int {
 	fmt.Println("Enter your password: ")
 	var password int
-	fmt.Scanln(&password)
+  scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+  password, _ = strconv.Atoi(scanner.Text())
 	return handlePassword(password)
 }
 
 func getInitialDeposit() float64 {
 	fmt.Println("Enter the amount you want to deposit: ")
 	var deposit float64
-	fmt.Scanln(&deposit)
+  scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+  deposit, _ = strconv.ParseFloat(scanner.Text(), 64)
 	return deposit
 }
 
