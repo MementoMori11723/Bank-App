@@ -18,7 +18,7 @@ func CreateAccount() {
   user.Balance = getInitialDeposit()
   user.AccountNumber = getAccountNumber()
 
-	insertDB(user)
+	insert(user)
 	fmt.Println("Account created successfully!")
 }
 
@@ -29,7 +29,7 @@ func CheckBalance() {
 	fmt.Scanln(&accountNumber)
 	fmt.Println("Enter your password: ")
 	fmt.Scanln(&password)
-	fetchDB(accountNumber, password)
+	fetch(accountNumber, password)
 	fmt.Println("Your balance is: ")
 }
 
