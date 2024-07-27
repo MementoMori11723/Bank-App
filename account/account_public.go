@@ -17,20 +17,17 @@ func CreateAccount() {
   user.password = getPassword()
   user.Balance = getInitialDeposit()
   user.AccountNumber = getAccountNumber()
-
 	insert(user)
 	fmt.Println("Account created successfully!")
 }
 
 func CheckBalance() {
-	var accountNumber int32
-	var password int
-	fmt.Println("Enter your account number: ")
-	fmt.Scanln(&accountNumber)
-	fmt.Println("Enter your password: ")
-	fmt.Scanln(&password)
-	fetch(accountNumber, password)
-	fmt.Println("Your balance is: ")
+  var accountNumber int64
+  var password int
+  accountNumber = fetchAccountNumber()
+  password = fetchPassword()
+  Balance := fetchBalance(accountNumber, password)
+  fmt.Println("Your balance is: ", Balance)
 }
 
 func DepositMoney() {

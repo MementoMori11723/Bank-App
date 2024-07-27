@@ -39,18 +39,25 @@ func insert(user Account) {
 	fmt.Println("Password: ", user.password)
 }
 
-func fetch(accountNumber int32, password int) *sql.Rows {
+func fetchBalance(accountNumber int64, password int) float64 {
 	db := connectDB()
+  var Balance float64
 	rows, err := db.Query(
-		"SELECT * FROM Account WHERE AccountNumber = ? AND password = ?",
+		"SELECT Balance FROM Account WHERE AccountNumber = ? AND password = ?",
 		accountNumber, password,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
 	defer rows.Close()
+  for rows.Next() {
+    err := rows.Scan(&Balance)
+    if err != nil {
+      fmt.Println("Error: ", err)
+    }
+  }
 	defer db.Close()
-	return rows
+	return Balance
 }
 
 func updateBalance(user Account) {

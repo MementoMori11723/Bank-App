@@ -43,6 +43,24 @@ func handlePassword(password int) int {
 	return password
 }
 
+func fetchPassword() int {
+  fmt.Println("Enter your password: ")
+  var password int
+  scanner := bufio.NewScanner(os.Stdin)
+  scanner.Scan()
+  password, _ = strconv.Atoi(scanner.Text())
+  return password
+}
+
+func fetchAccountNumber() int64 {
+  fmt.Println("Enter your account number: ")
+  var accountNumber int64
+  scanner := bufio.NewScanner(os.Stdin)
+  scanner.Scan()
+  accountNumber, _ = strconv.ParseInt(scanner.Text(), 10, 64)
+  return accountNumber
+}
+
 func getPassword() int {
 	fmt.Println("Enter your password: ")
 	var password int
