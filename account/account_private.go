@@ -88,6 +88,14 @@ func generateAccountNumber() int64 {
 	return convertedAccountNumber
 }
 
+func verifyAccountNumber(accountNumber int64) (bool,error) {
+  // need to write the code
+  if fetchAccount(accountNumber) {
+    return true,nil
+  }
+  return false,nil
+} 
+
 func getAccountNumber() int64 {
 	AccountNumber := generateAccountNumber()
 	condition, err := verifyAccountNumber(AccountNumber)

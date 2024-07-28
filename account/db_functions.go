@@ -9,7 +9,6 @@ import (
 
 func connectDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./account/dummy.db")
-	defer db.Close()
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
@@ -17,14 +16,6 @@ func connectDB() *sql.DB {
 		fmt.Println("Error: ", err)
 	}
 	return db
-}
-
-func verifyAccountNumber(accountNumber int64) (bool, error) {
-	// Verify account number.
-	if accountNumber != 0 {
-		return true, nil
-	}
-	return false, nil
 }
 
 func insert(user Account) {
@@ -39,9 +30,17 @@ func insert(user Account) {
 	fmt.Println("Password: ", user.password)
 }
 
+func fetchAccount(accountNumber int64) bool {
+	// need to fetch account
+	if accountNumber == 1000 {
+		return true
+	}
+	return false
+}
+
 func fetchBalance(accountNumber int64, password int) float64 {
 	db := connectDB()
-  var Balance float64
+	var Balance float64
 	rows, err := db.Query(
 		"SELECT Balance FROM Account WHERE AccountNumber = ? AND password = ?",
 		accountNumber, password,
@@ -50,12 +49,12 @@ func fetchBalance(accountNumber int64, password int) float64 {
 		fmt.Println("Error: ", err)
 	}
 	defer rows.Close()
-  for rows.Next() {
-    err := rows.Scan(&Balance)
-    if err != nil {
-      fmt.Println("Error: ", err)
-    }
-  }
+	for rows.Next() {
+		err := rows.Scan(&Balance)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+	}
 	defer db.Close()
 	return Balance
 }
