@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
 func getUserName() string {
@@ -80,12 +81,16 @@ func getInitialDeposit() float64 {
 }
 
 func generateAccountNumber() int64 {
-	var accountNumber string
-	for i := 0; i < 16; i++ {
-		accountNumber += string(rune(rand.Intn(10)))
-	}
-	convertedAccountNumber, _ := strconv.ParseInt(accountNumber, 10, 64)
-	return convertedAccountNumber
+  rand.New(rand.NewSource(time.Now().UnixNano()))
+  var accountNumber string
+  for i := 0; i < 16; i++ {
+    accountNumber += strconv.Itoa(rand.Intn(10))
+  }
+  accountNumberInt, err := strconv.ParseInt(accountNumber, 10, 64)
+  if err != nil {
+    fmt.Println("Error: ", err)
+  }
+  return accountNumberInt
 }
 
 func verifyAccountNumber(accountNumber int64) (bool,error) {
