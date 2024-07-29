@@ -20,10 +20,13 @@ func connectDB() *sql.DB {
 
 func insert(user Account) {
 	db := connectDB()
-	db.Exec(
-		"INSERT INTO Account (Name, password, Balance, AccountNumber) VALUES (?, ?)",
+  _,err := db.Exec(
+		"INSERT INTO Account (Name, password, Balance, AccountNumber) VALUES (?, ?, ?, ?)",
 		user.Name, user.password, user.Balance, user.AccountNumber,
 	)
+  if err != nil {
+    fmt.Println("Error: ", err)
+  }
 	defer db.Close()
 	fmt.Println("Account inserted successfully!")
 	fmt.Println("Name: ", user.Name)
