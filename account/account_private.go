@@ -26,12 +26,10 @@ func getUserName() string {
 }
 
 func handlePassword(password int) int {
-  // Having issue with the commmented code below
-
-	// if len(strconv.Itoa(password)) >= 4 {
-	// 	fmt.Println("Password must be at least 4 digits. Please try again.")
-	// 	return getPassword()
-	// }
+	if len(strconv.Itoa(password)) < 4 {
+		fmt.Println("Password must be at least 4 digits. Please try again.")
+		return getPassword()
+	}
 	fmt.Println("Confirm your password: ")
 	var confirmPassword int
 	scanner := bufio.NewScanner(os.Stdin)
