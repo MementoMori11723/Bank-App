@@ -7,6 +7,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+/*
+     connection function to connect to the database.
+*/
+
 func connectDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./account/dummy.db")
 	if err != nil {
