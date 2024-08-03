@@ -92,11 +92,12 @@ func generateAccountNumber() int64 {
 }
 
 func verifyAccountNumber(accountNumber int64) (bool,error) {
-  // need to write the code
-  if fetchAccount(accountNumber) {
-    return true,nil
+  var toggle bool
+  toggle, err :=  fetchAccount(accountNumber)
+  if toggle {
+    return true,err
   }
-  return false,nil
+  return false,err
 } 
 
 func getAccountNumber() int64 {

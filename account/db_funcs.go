@@ -3,13 +3,8 @@ package account
 import (
 	"database/sql"
 	"fmt"
-
 	_ "github.com/mattn/go-sqlite3"
 )
-
-/*
-     connection function to connect to the database.
-*/
 
 func connectDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./account/dummy.db")
@@ -24,25 +19,33 @@ func connectDB() *sql.DB {
 
 func insert(user Account) {
 	db := connectDB()
-  _,err := db.Exec(
+	_, err := db.Exec(
 		"INSERT INTO Account (Name, password, Balance, AccountNumber) VALUES (?, ?, ?, ?)",
 		user.Name, user.password, user.Balance, user.AccountNumber,
 	)
-  if err != nil {
-    fmt.Println("Error: ", err)
-  }
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
 	defer db.Close()
 	fmt.Println("Account inserted successfully!")
 	fmt.Println("Name: ", user.Name)
 	fmt.Println("Password: ", user.password)
 }
 
-func fetchAccount(accountNumber int64) bool {
-	// need to fetch account
-	if accountNumber == 1000 {
-		return true
+func fetchAccount(accountNumber int64) (bool,error) {
+	var count int
+  var err error
+	db := connectDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT COUNT(AccountNumber) FROM Account WHERE AccountNumber = ?", accountNumber)
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&count)
 	}
-	return false
+	if count == 0 {
+		return true, err
+	}
+	return false, err
 }
 
 func fetchBalance(accountNumber int64, password int) float64 {
