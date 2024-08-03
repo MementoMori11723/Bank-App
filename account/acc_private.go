@@ -112,3 +112,12 @@ func getAccountNumber() int64 {
 	fmt.Println("Here is your account number: ", AccountNumber)
 	return AccountNumber
 }
+
+func setBalance() float64 {
+  fmt.Println("Enter the amount you want to deposit: ")
+  var deposit float64
+  scanner := bufio.NewScanner(os.Stdin)
+  scanner.Scan()
+  deposit, _ = strconv.ParseFloat(scanner.Text(), 64)
+  return deposit
+}

@@ -31,6 +31,10 @@ func CheckBalance() {
 }
 
 func DepositMoney() {
+  var user Account
+  user.AccountNumber = fetchAccountNumber()
+  user.Balance = setBalance()
+  updateBalance(user)
 	fmt.Println("Money deposited successfully!")
 }
 
