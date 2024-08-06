@@ -1,28 +1,32 @@
-// Functions present in this file
+// Description: This file contains all the functions that interact with the database.
 
-// connectionDB - returns a pointer to a connection variable to the database
-// insert - takes in Account varible and inserts it to the database 
-// fetchAccount - takes accountNumber and returns a boolean and an error variable
-// fetchBalance - takes accountNumber and returns a float
-// updateBalance - takes in Account varible and updates Balance
-// updateName - takes in Account varible and updates Name
-// updatePassword - takes in Account varible and updates Password
+// there are 4 sections in this file:
+// 1. Connection functions
+// 2. Insert functions
+// 3. Update functions
+// 4. Select functions
 
 package account
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func connectDB() (*sql.DB,error) {
+// Connection functions section
+
+func connectDB() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./account/dummy.db")
-	return db,err
+	return db, err
 }
 
+// Insert functions section
+
 func insert(user Account) {
-	db,_ := connectDB()
+	db, _ := connectDB()
 	_, err := db.Exec(
 		"INSERT INTO Account (Name, password, Balance, AccountNumber) VALUES (?, ?, ?, ?)",
 		user.Name, user.password, user.Balance, user.AccountNumber,
@@ -36,80 +40,92 @@ func insert(user Account) {
 	fmt.Println("Password: ", user.password)
 }
 
-func updateDB(user Account, query string) (string) {
-  db,err := connectDB()
-  defer db.Close()
-  if err != nil {
-    return err.Error()
-  }
-  return "Updated Data without issues!"
-}
+// Update functions section
 
-func fetchAccount(accountNumber int64) (bool,error) {
-	var count int
-  var err error
-	db,_ := connectDB()
+func updateDB(user Account, query string, condition string) string {
+	db, err := connectDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT COUNT(AccountNumber) FROM Account WHERE AccountNumber = ?", accountNumber)
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&count)
-	}
-	if count == 0 {
-		return true, err
-	}
-	return false, err
-}
-
-func fetchBalance(accountNumber int64, password int) float64 {
-	db,_ := connectDB()
-	var Balance float64
-	rows, err := db.Query(
-		"SELECT Balance FROM Account WHERE AccountNumber = ? AND password = ?",
-		accountNumber, password,
-	)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		return err.Error()
 	}
-	defer rows.Close()
-	for rows.Next() {
-		err := rows.Scan(&Balance)
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
+	switch condition {
+	case "Name":
+		db.Exec(query, user.Name, user.AccountNumber)
+	case "Password":
+		db.Exec(query, user.password, user.AccountNumber)
+	case "Balance":
+		db.Exec(query, user.Balance, user.AccountNumber)
+	default:
+		return "Invalid Condition"
 	}
-	defer db.Close()
-	return Balance
+	return "Updated Data without issues!"
 }
 
 func updateBalance(user Account) {
-	db,_ :=connectDB()
-	db.Exec(
-		"UPDATE Account SET Balance = ? WHERE AccountNumber = ?",
-		user.Balance, user.AccountNumber,
-	)
-	defer db.Close()
-	fmt.Println("Account Balance updated successfully!")
-	fmt.Println("Balance: ", user.Balance)
+	msg := updateDB(user, "UPDATE Account SET Balance = ? WHERE AccountNumber = ?", "Balance")
+	fmt.Println(msg)
 }
 
 func updateName(user Account) {
-	db,_ :=connectDB()
-	db.Exec(
-		"UPDATE Account SET Name = ? WHERE AccountNumber = ?",
-		user.Name, user.AccountNumber,
-	)
-	defer db.Close()
-	fmt.Println("Account Name updated successfully!")
-	fmt.Println("Name: ", user.Name)
+	msg := updateDB(user, "UPDATE Account SET Name = ? WHERE AccountNumber = ?", "Name")
+	fmt.Println(msg)
 }
 
 func updatePassword(user Account) {
-	db,_ :=connectDB()
-	db.Exec(
-		"UPDATE Account SET Password = ? WHERE AccountNumber = ?",
-		user.password, user.AccountNumber,
-	)
+	msg := updateDB(user, "UPDATE Account SET password = ? WHERE AccountNumber = ?", "Password")
+	fmt.Println(msg)
+}
+
+// Select functions section
+
+func fetch(user Account, query string, condition string) (*sql.Rows, error) {
+	db, err := connectDB()
 	defer db.Close()
-	fmt.Println("Account Password updated successfully!")
+	if err != nil {
+		return nil, err
+	}
+	switch condition {
+	case "AccountNumber":
+    row, err := db.Query(query, user.AccountNumber)
+		if err != nil {
+			return row, err
+		}
+    return row, nil
+	case "Balance":
+    row, err := db.Query(query, user.AccountNumber, user.password)
+		if err != nil {
+			return row, err
+		}
+    return row, nil
+	default:
+		return nil, errors.New("Invalid Condition")
+	}
+}
+
+func selectAndVerifyAccount(accountNumber int64) (bool, error) {
+  user := Account{AccountNumber: accountNumber}
+  rows,err := fetch(user, "SELECT AccountNumber FROM Account WHERE AccountNumber = ?", "AccountNumber")
+  defer rows.Close()
+  if err != nil {
+    return false, err
+  }
+  for rows.Next() {
+    rows.Scan(&user.AccountNumber)
+    if user.AccountNumber == accountNumber {
+      return true, nil
+    }
+  }
+  return false, nil
+}
+
+func selectBalance(user Account) float64 {
+  rows,err := fetch(user, "SELECT Balance FROM Account WHERE AccountNumber = ? AND password = ?", "Balance")
+  defer rows.Close()
+  if err != nil {
+    fmt.Println("Error: ", err)
+  }
+  for rows.Next() {
+    rows.Scan(&user.Balance)
+  }
+  return user.Balance
 }

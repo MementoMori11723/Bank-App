@@ -2,3 +2,5 @@ After analysing the functions in db, the result is a mess.
 to fix this we need to create a structure that is both fast and secure.
 we can see in the comments that we are just using the same functions again and again...
 to fix this we can combine these multiple functions into a single function.
+
+we have now fixed the update functions now we need to make all function do the same and also return the data.

@@ -93,7 +93,7 @@ func generateAccountNumber() int64 {
 
 func verifyAccountNumber(accountNumber int64) (bool,error) {
   var toggle bool
-  toggle, err :=  fetchAccount(accountNumber)
+  toggle, err :=  selectAndVerifyAccount(accountNumber)
   if toggle {
     return true,err
   }

@@ -26,7 +26,7 @@ func CheckBalance() {
   var password int
   accountNumber = fetchAccountNumber()
   password = fetchPassword()
-  Balance := fetchBalance(accountNumber, password)
+  Balance := selectBalance(Account{AccountNumber: accountNumber, password: password})
   fmt.Println("Your balance is: ", Balance)
 }
 
