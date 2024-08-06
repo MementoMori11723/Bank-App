@@ -1,3 +1,13 @@
+// Functions present in this file
+
+// connectionDB - returns a pointer to a connection variable to the database
+// insert - takes in Account varible and inserts it to the database 
+// fetchAccount - takes accountNumber and returns a boolean and an error variable
+// fetchBalance - takes accountNumber and returns a float
+// updateBalance - takes in Account varible and updates Balance
+// updateName - takes in Account varible and updates Name
+// updatePassword - takes in Account varible and updates Password
+
 package account
 
 import (
@@ -6,19 +16,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func connectDB() *sql.DB {
+func connectDB() (*sql.DB,error) {
 	db, err := sql.Open("sqlite3", "./account/dummy.db")
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
-	if err = db.Ping(); err != nil {
-		fmt.Println("Error: ", err)
-	}
-	return db
+	return db,err
 }
 
 func insert(user Account) {
-	db := connectDB()
+	db,_ := connectDB()
 	_, err := db.Exec(
 		"INSERT INTO Account (Name, password, Balance, AccountNumber) VALUES (?, ?, ?, ?)",
 		user.Name, user.password, user.Balance, user.AccountNumber,
@@ -32,10 +36,19 @@ func insert(user Account) {
 	fmt.Println("Password: ", user.password)
 }
 
+func updateDB(user Account, query string) (string) {
+  db,err := connectDB()
+  defer db.Close()
+  if err != nil {
+    return err.Error()
+  }
+  return "Updated Data without issues!"
+}
+
 func fetchAccount(accountNumber int64) (bool,error) {
 	var count int
   var err error
-	db := connectDB()
+	db,_ := connectDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT COUNT(AccountNumber) FROM Account WHERE AccountNumber = ?", accountNumber)
 	defer rows.Close()
@@ -49,7 +62,7 @@ func fetchAccount(accountNumber int64) (bool,error) {
 }
 
 func fetchBalance(accountNumber int64, password int) float64 {
-	db := connectDB()
+	db,_ := connectDB()
 	var Balance float64
 	rows, err := db.Query(
 		"SELECT Balance FROM Account WHERE AccountNumber = ? AND password = ?",
@@ -70,7 +83,7 @@ func fetchBalance(accountNumber int64, password int) float64 {
 }
 
 func updateBalance(user Account) {
-	db := connectDB()
+	db,_ :=connectDB()
 	db.Exec(
 		"UPDATE Account SET Balance = ? WHERE AccountNumber = ?",
 		user.Balance, user.AccountNumber,
@@ -81,7 +94,7 @@ func updateBalance(user Account) {
 }
 
 func updateName(user Account) {
-	db := connectDB()
+	db,_ :=connectDB()
 	db.Exec(
 		"UPDATE Account SET Name = ? WHERE AccountNumber = ?",
 		user.Name, user.AccountNumber,
@@ -92,7 +105,7 @@ func updateName(user Account) {
 }
 
 func updatePassword(user Account) {
-	db := connectDB()
+	db,_ :=connectDB()
 	db.Exec(
 		"UPDATE Account SET Password = ? WHERE AccountNumber = ?",
 		user.password, user.AccountNumber,
