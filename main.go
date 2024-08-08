@@ -1,28 +1,16 @@
 package main
 
 import (
+	dummy "bank-cli/dummy-bank"
 	"fmt"
 	"os"
-
-	"bank-cli/account"
 )
 
-type Tool func()
-
 func main() {
-	fmt.Println("Welcome to dummy bank!")
+  fmt.Println("\nWelcome to Dummy Bank!\n ")
 	fmt.Println("Please select an option:\n1. Create an account\n2. Deposit money\n3. Withdraw money\n4. Check balance\n5. View transactions history\n6. Settings\n7. Exit")
 
 	var signal bool = false
-
-	var tools = []Tool{
-		account.CreateAccount,
-		account.DepositMoney,
-		account.WithdrawMoney,
-		account.CheckBalance,
-		account.ViewTransactionsHistory,
-		account.Settings,
-	}
 
 	for !signal {
 		var opt int
@@ -35,7 +23,7 @@ func main() {
 
 		opt = opt - 1
 		if opt != 6 && opt < 6 {
-			tools[opt]()
+		    dummy.List[opt]()
 		}
 
 		signal = true
