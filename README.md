@@ -1,6 +1,10 @@
-# Bank - CLI
+# Bank - Application
 
-Creating a simple CLI application that simulates a bank account in an atm machine.
+This is a simple bank application that allows you to create an account, deposit money, withdraw money, check balance, view transaction history, and many other features.
+
+## Support :
+    1. Web
+    2. CLI
 
 ## fearures:
 
@@ -11,9 +15,3 @@ Creating a simple CLI application that simulates a bank account in an atm machin
 - View transaction history
 - Settings (change pin, change account name, and many other options)
 - Exit
-
-## How to run:
-
-```bash
-go run main.go
-```
