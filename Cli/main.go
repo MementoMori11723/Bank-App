@@ -1,7 +1,7 @@
 package main
 
 import (
-	dummy "bank-cli/dummy-bank"
+	// dummy "bank-cli/dummy-bank"
 	"fmt"
 	"os"
 )
@@ -23,7 +23,7 @@ func main() {
 
 		opt = opt - 1
 		if opt != 6 && opt < 6 {
-		    dummy.List[opt]()
+		    // dummy.List[opt]()
 		}
 
 		signal = true

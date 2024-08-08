@@ -1,4 +1,4 @@
-package dummybank
+package database
 
 import "fmt"
 
