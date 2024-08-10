@@ -1,9 +1,10 @@
-package database
+package functions
 
 import "fmt"
 
-func CreateAccount() {
+func CreateAccount() string {
   fmt.Println("Create an account")
+  return "Account created" //just for testing purposes.
 }
 
 func DepositMoney() {
