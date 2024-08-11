@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/MementoMori11723/Bank-App/database/functions"
 )
 
@@ -26,6 +27,10 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("Welcome to Dummy Bank!")
+  err := godotenv.Load()
+  if err != nil {
+    fmt.Println("Error loading .env file")
+  }
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"

@@ -8,10 +8,10 @@ help:
 	@echo "  make run-Cli - Run the Go CLI Application"
 run-Database:
 	@echo "Running the Go Database Server"
-	cd Database && go run main.go && cd ..
+	cd Database && go run -mod=vendor main.go && cd ..
 run-Web:
 	@echo "Running the Go Web Application Server"
-	cd Web && go run main.go && cd ..
+	cd Web && go run -mod=vendor main.go && cd ..
 run-Cli:
 	@echo "Running the Go CLI Application"
-	cd Cli && go run main.go && cd ..
+	cd Cli && go run -mod=vendor main.go && cd ..
