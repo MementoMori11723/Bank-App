@@ -11,7 +11,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/MementoMori11723/Bank-App/database/functions"
+	"github.com/MementoMori11723/Bank-App/database/functions/process"
 )
 
 type Data struct {
@@ -20,7 +20,7 @@ type Data struct {
 
 func createAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	msg := functions.CreateAccount()
+  msg := process.CreateAccount()
 	data := Data{Message: msg}
 	json.NewEncoder(w).Encode(data)
 }
