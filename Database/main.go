@@ -1,32 +1,20 @@
 // This is Level - 1 also the main file.
 
-// It will provide an interface to the user by using http server to host and process the requests.
+// it will provide an interface to the user by using http server to host and process the requests.
 
 package main
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/MementoMori11723/Bank-App/database/functions/process"
+	// "github.com/mementomori11723/bank-app/database/functions/process"
 )
 
-type Data struct {
-	Message string `json:"message"`
-}
-
-func createAccount(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-  msg := process.CreateAccount()
-	data := Data{Message: msg}
-	json.NewEncoder(w).Encode(data)
-}
-
 func main() {
-	fmt.Println("Welcome to Dummy Bank!")
   err := godotenv.Load()
   if err != nil {
     fmt.Println("Error loading .env file")
@@ -35,6 +23,9 @@ func main() {
 	if PORT == "" {
 		PORT = "8080"
 	}
-	http.HandleFunc("/", createAccount)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+  })
 	http.ListenAndServe(":"+PORT, nil)
 }
