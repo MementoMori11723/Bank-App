@@ -15,7 +15,7 @@ func connect() (*sql.DB, error) {
   )
 }
 
-func Get(tableName string, id int64) *sql.Rows {
+func Get(args ...any) *sql.Rows {
   db, err := connect()
   defer db.Close()
   if err != nil {
@@ -24,8 +24,7 @@ func Get(tableName string, id int64) *sql.Rows {
   }
   rows, err := db.Query(
     "select * from ? where id = ?", 
-    tableName, 
-    id,
+    args...,
   )
   if err != nil {
     log.Fatal(err)
@@ -42,7 +41,7 @@ func Insert(args ...any) {
     return
   }
   _, err = db.Exec(
-    "INSERT INTO accounts (name, balance) VALUES (?, ?)", 
+    "INSERT INTO ? (name, balance) VALUES (?, ?)",
     args...,
   )
   if err != nil {
@@ -59,7 +58,7 @@ func Update(args ...any) {
     return
   }
   _, err = db.Exec(
-    "UPDATE accounts SET balance = ? WHERE name = ?", 
+    "UPDATE ? SET balance = ? WHERE name = ?", 
     args...,
   )
   if err != nil {
@@ -76,7 +75,7 @@ func Delete(args ...any) {
     return
   }
   _, err = db.Exec(
-    "DELETE FROM accounts WHERE name = ?", 
+    "DELETE FROM ? WHERE name = ?", 
     args...,
   )
   if err != nil {
