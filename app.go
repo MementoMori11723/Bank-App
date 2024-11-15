@@ -1,7 +1,7 @@
 package main
 
 import (
-	Cmd "bank-app/cmd"
+	"bank-app/cli"
 	"bank-app/database"
 	"bank-app/web"
 	"flag"
@@ -18,7 +18,7 @@ func main() {
 	if *port != "" {
 		web.Start(*port)
 	} else {
-		Cmd.Menu()
+		cli.Menu()
 		fmt.Println("Goodbye")
 	}
 }

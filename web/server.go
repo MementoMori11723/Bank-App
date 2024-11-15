@@ -8,10 +8,10 @@ import (
 func Start(port string) {
 	go func() {
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
+			fmt.Fprintf(w, "<h1>Hello, you've requested: %s\n</h1>", r.URL.Path)
 		})
 		http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "This is an example of a simple HTTP server")
+			fmt.Fprintf(w, "<h1>This is an example of a simple HTTP server</h1>")
 		})
 		fmt.Println("Starting server on http://localhost:" + port)
 		fmt.Println("Press enter to stop the server...")
