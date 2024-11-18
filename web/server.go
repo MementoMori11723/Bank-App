@@ -1,17 +1,36 @@
 package web
 
 import (
+	"embed"
 	"fmt"
+	"html/template"
 	"net/http"
 )
+
+//go:embed pages/*.html
+var pages embed.FS
 
 func Start(port string) {
 	go func() {
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "<h1>Hello, you've requested: %s\n</h1>", r.URL.Path)
+			tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/home.html")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if err := tmpl.Execute(w, nil); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		})
 		http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "<h1>This is an example of a simple HTTP server</h1>")
+			tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/about.html")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if err := tmpl.Execute(w, nil); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		})
 		fmt.Println("Starting server on http://localhost:" + port)
 		fmt.Println("Press enter to stop the server...")
