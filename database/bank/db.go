@@ -48,7 +48,8 @@ func init(){
   }
   db_path = data.Database.Path
   if "" == db_path {
-    slog.Warn(db_path+" file Doesn't exist! - Creating the file")
+    slog.Warn("Database file Doesn't exist!")
+    slog.Info("Creating the file...")
     db_path = "./bank.db"
     _, err := os.Create(db_path)
     if err != nil {
