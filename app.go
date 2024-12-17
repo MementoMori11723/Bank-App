@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 	fmt.Println("Welcome to the bank")
 	go func() {
-		database.Server()
+		database.Server("11000")
 	}()
 	if *port != "" {
 		web.Start(*port)
