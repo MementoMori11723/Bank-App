@@ -3,23 +3,37 @@ package web
 import (
 	"embed"
 	"fmt"
+	"log/slog"
 	"net/http"
 )
 
-//go:embed pages/*.html
-var pages embed.FS
+var (
+	//go:embed pages/*.html
+	pages embed.FS
+
+	routes = map[string]http.HandlerFunc{
+		"/":          home,
+		"/about":     about,
+		"/error":     errorPage,
+		"/dashboard": dashboard,
+	}
+)
 
 func Start(port string) {
 	go func() {
-		http.HandleFunc("/", home)
-		http.HandleFunc("/about", about)
-		http.HandleFunc("/error", errorPage)
-		http.HandleFunc("/dashboard", dashboard)
-		fmt.Println("Starting server on http://localhost:" + port)
-		fmt.Println("Press enter to stop the server...")
-		err := http.ListenAndServe(":"+port, nil)
+		mux := http.NewServeMux()
+		for route, handler := range routes {
+			mux.HandleFunc(route, handler)
+		}
+		client := http.Server{
+			Addr:    ":" + port,
+			Handler: mux,
+		}
+		slog.Info("Starting server on http://localhost:" + port)
+		slog.Info("Press enter to stop the server...")
+		err := client.ListenAndServe()
 		if err != nil {
-			fmt.Println("Error starting server:", err)
+      slog.Error(err.Error())
 			return
 		}
 	}()
