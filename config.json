@@ -2,8 +2,8 @@
   "database": {
     "path": "bank.db"
   },
-  "server":{
-    "port":"11000"
+  "server": {
+    "port": "11000"
   },
-  "log": "app.log"
+  "log": ".app.log"
 }

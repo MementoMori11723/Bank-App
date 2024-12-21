@@ -26,6 +26,7 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
+
 	var data config
 	err = json.NewDecoder(bytes.NewReader(conf)).Decode(&data)
 	if err != nil {
@@ -43,12 +44,16 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(w, nil))
 	slog.SetDefault(logger)
 
+  run(data.Server.Port)
+}
+
+func run(serverPort string) {
 	port := flag.String("server", "", "port to run the server on")
 	flag.Parse()
 	fmt.Println("Welcome to the bank")
 
 	go func() {
-		database.Server(data.Server.Port)
+		database.Server(serverPort)
 	}()
 
 	if *port != "" {
