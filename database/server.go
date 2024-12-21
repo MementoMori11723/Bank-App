@@ -11,7 +11,7 @@ var (
     "/create": create,
     "/deposit": deposit,
     "/withdraw":withdraw,
-    "/balance": withdraw, 
+    "/balance": balance, 
     "/transactions": transactions,
     "/transfer": transfer,
   }
