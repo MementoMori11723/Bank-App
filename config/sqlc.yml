@@ -6,4 +6,4 @@ sql:
     gen:
       go:
         package: "bank_schema"
-        out: "./database/bank/bank_schema"
+        out: "../database/bank/bank_schema"
