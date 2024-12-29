@@ -5,5 +5,5 @@ sql:
     schema: "schema.sql"
     gen:
       go:
-        package: "bank_schema"
-        out: "../database/bank/bank_schema"
+        package: "schema"
+        out: "../database/schema"
