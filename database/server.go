@@ -17,7 +17,7 @@ var (
   }
 )
 
-func Server(Port string) {
+func Server(Port, db_path string) {
   mux := http.NewServeMux()
   for route, handler := range routes {
     mux.HandleFunc(route, handler)

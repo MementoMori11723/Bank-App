@@ -29,34 +29,34 @@ type Transaction struct {
 }
 
 type db_Config struct {
-  Database struct {
-    Path string `json:"path"` 
-  } `json:"database"`
+	Database struct {
+		Path string `json:"path"`
+	} `json:"database"`
 }
 
 var db_path string
 
-func init(){
-  file, err := os.ReadFile("./config.json")
-  if err != nil {
-    slog.Error(err.Error())
-  }
-  var data db_Config
-  err = json.NewDecoder(bytes.NewReader(file)).Decode(&data)
-  if err != nil {
-    slog.Error(err.Error())
-  }
-  db_path = data.Database.Path
-  if "" == db_path {
-    slog.Warn("Database file Doesn't exist!")
-    slog.Info("Creating the file...")
-    db_path = "./bank.db"
-    _, err := os.Create(db_path)
-    if err != nil {
-      slog.Error(err.Error())
-      os.Exit(1)
-    }
-  }
+func init() {
+	file, err := os.ReadFile("./config.json")
+	if err != nil {
+		slog.Error(err.Error())
+	}
+	var data db_Config
+	err = json.NewDecoder(bytes.NewReader(file)).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+	db_path = data.Database.Path
+	if "" == db_path {
+		slog.Warn("Database file Doesn't exist!")
+		slog.Info("Creating the file...")
+		db_path = "./bank.db"
+		_, err := os.Create(db_path)
+		if err != nil {
+			slog.Error(err.Error())
+			os.Exit(1)
+		}
+	}
 }
 
 func connect() (*sql.DB, error) {

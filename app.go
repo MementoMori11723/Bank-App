@@ -14,6 +14,9 @@ import (
 )
 
 type config struct {
+	Database struct {
+		Path string `json:"path"`
+	} `json:"database"`
 	Server struct {
 		Port string `json:"port"`
 	} `json:"server"`
@@ -44,16 +47,16 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(w, nil))
 	slog.SetDefault(logger)
 
-  run(data.Server.Port)
+	run(data.Server.Port, data.Database.Path)
 }
 
-func run(serverPort string) {
+func run(serverPort, db_path string) {
 	port := flag.String("server", "", "port to run the server on")
 	flag.Parse()
 	fmt.Println("Welcome to the bank")
 
 	go func() {
-		database.Server(serverPort)
+		database.Server(serverPort, db_path)
 	}()
 
 	if *port != "" {
