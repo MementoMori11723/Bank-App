@@ -2,6 +2,7 @@ package config
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -18,15 +19,15 @@ type config struct {
 	Log string `json:"log"`
 }
 
-func New() (string, string) {
-	conf, err := os.ReadFile("config.json")
-	if err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
-	}
+var (
+  //go:embed config.json 
+  conf []byte
+  file *os.File 
+)
 
+func New() (string, string, func()) {
 	var data config
-	err = json.NewDecoder(bytes.NewReader(conf)).Decode(&data)
+  err := json.NewDecoder(bytes.NewReader(conf)).Decode(&data)
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -36,11 +37,14 @@ func New() (string, string) {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-	defer file.Close()
+	
+  cleanup := func () {
+    file.Close()
+  }
 
 	w := io.MultiWriter(os.Stderr, file)
 	logger := slog.New(slog.NewJSONHandler(w, nil))
 	slog.SetDefault(logger)
 
-	return data.Server.Port, data.Database.Path
+	return data.Server.Port, data.Database.Path, cleanup
 }

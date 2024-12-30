@@ -10,17 +10,20 @@ import (
 )
 
 func main() {
-	serverPort, db_path := config.New()
+	serverPort, db_path, close_file := config.New()
+  defer close_file()
 
-	port := flag.String("server", "", "port to run the server on")
+  web_ui := flag.Bool("web", false, "flag to run the web ui")
+	port := flag.String("port", "8000", "port to run the web ui on")
 	flag.Parse()
+
 	fmt.Println("Welcome to the bank")
 
 	go func() {
 		database.Server(serverPort, db_path)
 	}()
 
-	if *port != "" {
+	if *web_ui {
 		web.Start(*port)
 	} else {
 		cli.Menu()
