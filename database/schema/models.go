@@ -9,7 +9,7 @@ import (
 )
 
 type Account struct {
-	ID        sql.NullInt64
+	ID        string
 	FirstName sql.NullString
 	LastName  sql.NullString
 	Username  sql.NullString
@@ -19,9 +19,9 @@ type Account struct {
 }
 
 type Transaction struct {
-	ID        sql.NullInt64
-	Sender    interface{}
-	Receiver  interface{}
+	ID        string
+	Sender    string
+	Receiver  string
 	Amount    sql.NullFloat64
-	Timestamp interface{}
+	Timestamp sql.NullString
 }

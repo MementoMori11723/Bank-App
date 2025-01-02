@@ -1,19 +1,21 @@
--- Account table 
-create table account (
-  id int, 
-  first_name text, 
+-- Account table
+create table if not exists account (
+  id text primary key, 
+  first_name text,
   last_name text, 
-  username text, 
-  email text, 
+  username text unique, 
+  email text unique, 
   password text, 
-  balance float
-); 
+  balance real
+);
 
 -- Transaction table
-create table transaction (
-  id int, 
-  sender string, 
-  receiver string, 
-  amount float, 
-  timestamp string
+create table if not exists transaction (
+  id text primary key,
+  sender text not null,
+  receiver text not null,
+  amount real, 
+  timestamp text,
+  foreign key (sender) references account (id),
+  foreign key (receiver) references account (id)
 );
