@@ -10,7 +10,7 @@ create table if not exists account (
 );
 
 -- Transaction table
-create table if not exists transaction (
+create table if not exists history (
   id text primary key,
   sender text not null,
   receiver text not null,

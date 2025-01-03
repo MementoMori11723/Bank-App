@@ -18,7 +18,7 @@ type Account struct {
 	Balance   sql.NullFloat64
 }
 
-type Transaction struct {
+type History struct {
 	ID        string
 	Sender    string
 	Receiver  string

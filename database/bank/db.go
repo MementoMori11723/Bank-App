@@ -18,33 +18,37 @@ func DB_init(path string) {
 	db_path = path
 
 	db, err := connect()
-	defer db.Close()
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("Database connection failed: " + err.Error())
+		return
 	}
+	defer db.Close()
 
 	if _, err := db.Exec("PRAGMA foreign_keys = ON;"); err != nil {
-		slog.Error(err.Error())
+		slog.Error("Failed to set foreign keys: " + err.Error())
+		return
 	}
 
 	if _, err := db.Exec("PRAGMA journal_mode = WAL;"); err != nil {
-		slog.Error(err.Error())
+		slog.Error("Failed to set journal mode: " + err.Error())
+		return
 	}
-
-	schema, err := os.ReadFile("../../config/schema.sql")
+  
+	schema, err := os.ReadFile("config/schema.sql")
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("Failed to read schema file: " + err.Error())
+		return
 	}
 
-	schemaString := string(schema)
-	if _, err := db.Exec(schemaString); err != nil {
-		slog.Error(err.Error())
+	if _, err := db.Exec(string(schema)); err != nil {
+		slog.Error("Failed to execute schema: " + err.Error())
+		return
 	}
 }
 
 func connect() (*sql.DB, error) {
 	db, err := sql.Open(
-		"sqlite", db_path,
+		"sqlite3", db_path,
 	)
 	if err != nil {
 		return nil, err

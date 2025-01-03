@@ -17,7 +17,7 @@ var routes = map[string]http.HandlerFunc{
 }
 
 func Server(Port, db_path string) {
-	bank.DB_init(db_path)
+  go bank.DB_init(db_path)
 	mux := http.NewServeMux()
 	for route, handler := range routes {
 		mux.HandleFunc(route, handler)

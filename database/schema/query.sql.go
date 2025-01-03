@@ -44,19 +44,19 @@ func (q *Queries) GetAccounts(ctx context.Context) ([]Account, error) {
 	return items, nil
 }
 
-const getTransactions = `-- name: GetTransactions :many
-select id, sender, receiver, amount, timestamp from transaction
+const getHistory = `-- name: GetHistory :many
+select id, sender, receiver, amount, timestamp from history
 `
 
-func (q *Queries) GetTransactions(ctx context.Context) ([]Transaction, error) {
-	rows, err := q.db.QueryContext(ctx, getTransactions)
+func (q *Queries) GetHistory(ctx context.Context) ([]History, error) {
+	rows, err := q.db.QueryContext(ctx, getHistory)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transaction
+	var items []History
 	for rows.Next() {
-		var i Transaction
+		var i History
 		if err := rows.Scan(
 			&i.ID,
 			&i.Sender,
