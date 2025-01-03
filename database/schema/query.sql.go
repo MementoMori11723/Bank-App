@@ -7,49 +7,148 @@ package schema
 
 import (
 	"context"
+	"database/sql"
 )
 
-const getAccounts = `-- name: GetAccounts :many
-select id, first_name, last_name, username, email, password, balance from account
+const createAccount = `-- name: CreateAccount :exec
+INSERT INTO account (id, first_name, last_name, username, email, password, balance)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
-func (q *Queries) GetAccounts(ctx context.Context) ([]Account, error) {
-	rows, err := q.db.QueryContext(ctx, getAccounts)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Account
-	for rows.Next() {
-		var i Account
-		if err := rows.Scan(
-			&i.ID,
-			&i.FirstName,
-			&i.LastName,
-			&i.Username,
-			&i.Email,
-			&i.Password,
-			&i.Balance,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type CreateAccountParams struct {
+	ID        string
+	FirstName sql.NullString
+	LastName  sql.NullString
+	Username  sql.NullString
+	Email     sql.NullString
+	Password  sql.NullString
+	Balance   sql.NullFloat64
 }
 
-const getHistory = `-- name: GetHistory :many
-select id, sender, receiver, amount, timestamp from history
+func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
+	_, err := q.db.ExecContext(ctx, createAccount,
+		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+		arg.Balance,
+	)
+	return err
+}
+
+const deleteAccount = `-- name: DeleteAccount :exec
+DELETE FROM account
+WHERE id = ?
 `
 
-func (q *Queries) GetHistory(ctx context.Context) ([]History, error) {
-	rows, err := q.db.QueryContext(ctx, getHistory)
+func (q *Queries) DeleteAccount(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteAccount, id)
+	return err
+}
+
+const deposit = `-- name: Deposit :exec
+UPDATE account
+SET balance = balance + ?
+WHERE id = ?
+`
+
+type DepositParams struct {
+	Balance sql.NullFloat64
+	ID      string
+}
+
+func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
+	_, err := q.db.ExecContext(ctx, deposit, arg.Balance, arg.ID)
+	return err
+}
+
+const getAccountByID = `-- name: GetAccountByID :one
+SELECT id, first_name, last_name, username, email, balance
+FROM account
+WHERE id = ?
+`
+
+type GetAccountByIDRow struct {
+	ID        string
+	FirstName sql.NullString
+	LastName  sql.NullString
+	Username  sql.NullString
+	Email     sql.NullString
+	Balance   sql.NullFloat64
+}
+
+func (q *Queries) GetAccountByID(ctx context.Context, id string) (GetAccountByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByID, id)
+	var i GetAccountByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+		&i.Email,
+		&i.Balance,
+	)
+	return i, err
+}
+
+const getAccountByUsername = `-- name: GetAccountByUsername :one
+SELECT id, first_name, last_name, username, email, balance
+FROM account
+WHERE username = ?
+`
+
+type GetAccountByUsernameRow struct {
+	ID        string
+	FirstName sql.NullString
+	LastName  sql.NullString
+	Username  sql.NullString
+	Email     sql.NullString
+	Balance   sql.NullFloat64
+}
+
+func (q *Queries) GetAccountByUsername(ctx context.Context, username sql.NullString) (GetAccountByUsernameRow, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByUsername, username)
+	var i GetAccountByUsernameRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+		&i.Email,
+		&i.Balance,
+	)
+	return i, err
+}
+
+const getBalance = `-- name: GetBalance :one
+SELECT balance
+FROM account
+WHERE id = ?
+`
+
+func (q *Queries) GetBalance(ctx context.Context, id string) (sql.NullFloat64, error) {
+	row := q.db.QueryRowContext(ctx, getBalance, id)
+	var balance sql.NullFloat64
+	err := row.Scan(&balance)
+	return balance, err
+}
+
+const getTransactions = `-- name: GetTransactions :many
+SELECT id, sender, receiver, amount, timestamp
+FROM history
+WHERE sender = ? OR receiver = ?
+ORDER BY timestamp DESC
+`
+
+type GetTransactionsParams struct {
+	Sender   string
+	Receiver string
+}
+
+func (q *Queries) GetTransactions(ctx context.Context, arg GetTransactionsParams) ([]History, error) {
+	rows, err := q.db.QueryContext(ctx, getTransactions, arg.Sender, arg.Receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -75,4 +174,45 @@ func (q *Queries) GetHistory(ctx context.Context) ([]History, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const insertTransaction = `-- name: InsertTransaction :exec
+INSERT INTO history (id, sender, receiver, amount, timestamp)
+VALUES (?, ?, ?, ?, ?)
+`
+
+type InsertTransactionParams struct {
+	ID        string
+	Sender    string
+	Receiver  string
+	Amount    sql.NullFloat64
+	Timestamp sql.NullString
+}
+
+func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionParams) error {
+	_, err := q.db.ExecContext(ctx, insertTransaction,
+		arg.ID,
+		arg.Sender,
+		arg.Receiver,
+		arg.Amount,
+		arg.Timestamp,
+	)
+	return err
+}
+
+const withdraw = `-- name: Withdraw :exec
+UPDATE account
+SET balance = balance - ?
+WHERE id = ? AND balance >= ?
+`
+
+type WithdrawParams struct {
+	Balance   sql.NullFloat64
+	ID        string
+	Balance_2 sql.NullFloat64
+}
+
+func (q *Queries) Withdraw(ctx context.Context, arg WithdrawParams) error {
+	_, err := q.db.ExecContext(ctx, withdraw, arg.Balance, arg.ID, arg.Balance_2)
+	return err
 }

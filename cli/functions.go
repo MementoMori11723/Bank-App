@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"bank-app/database"
+	"bank-app/database/bank"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,7 +18,7 @@ func get_response(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var bodyRes database.Response
+	var bodyRes bank.Responce
 	err = json.Unmarshal(body, &bodyRes)
 	if err != nil {
 		return "", err
