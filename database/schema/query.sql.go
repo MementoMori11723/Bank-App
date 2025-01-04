@@ -16,13 +16,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateAccountParams struct {
-	ID        string
-	FirstName sql.NullString
-	LastName  sql.NullString
-	Username  sql.NullString
-	Email     sql.NullString
-	Password  sql.NullString
-	Balance   sql.NullFloat64
+	ID        string          `json:"id"`
+	FirstName sql.NullString  `json:"first_name"`
+	LastName  sql.NullString  `json:"last_name"`
+	Username  sql.NullString  `json:"username"`
+	Email     sql.NullString  `json:"email"`
+	Password  sql.NullString  `json:"password"`
+	Balance   sql.NullFloat64 `json:"balance"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
@@ -55,8 +55,8 @@ WHERE id = ?
 `
 
 type DepositParams struct {
-	Balance sql.NullFloat64
-	ID      string
+	Balance sql.NullFloat64 `json:"balance"`
+	ID      string          `json:"id"`
 }
 
 func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
@@ -71,12 +71,12 @@ WHERE id = ?
 `
 
 type GetAccountByIDRow struct {
-	ID        string
-	FirstName sql.NullString
-	LastName  sql.NullString
-	Username  sql.NullString
-	Email     sql.NullString
-	Balance   sql.NullFloat64
+	ID        string          `json:"id"`
+	FirstName sql.NullString  `json:"first_name"`
+	LastName  sql.NullString  `json:"last_name"`
+	Username  sql.NullString  `json:"username"`
+	Email     sql.NullString  `json:"email"`
+	Balance   sql.NullFloat64 `json:"balance"`
 }
 
 func (q *Queries) GetAccountByID(ctx context.Context, id string) (GetAccountByIDRow, error) {
@@ -100,12 +100,12 @@ WHERE username = ?
 `
 
 type GetAccountByUsernameRow struct {
-	ID        string
-	FirstName sql.NullString
-	LastName  sql.NullString
-	Username  sql.NullString
-	Email     sql.NullString
-	Balance   sql.NullFloat64
+	ID        string          `json:"id"`
+	FirstName sql.NullString  `json:"first_name"`
+	LastName  sql.NullString  `json:"last_name"`
+	Username  sql.NullString  `json:"username"`
+	Email     sql.NullString  `json:"email"`
+	Balance   sql.NullFloat64 `json:"balance"`
 }
 
 func (q *Queries) GetAccountByUsername(ctx context.Context, username sql.NullString) (GetAccountByUsernameRow, error) {
@@ -143,8 +143,8 @@ ORDER BY timestamp DESC
 `
 
 type GetTransactionsParams struct {
-	Sender   string
-	Receiver string
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
 }
 
 func (q *Queries) GetTransactions(ctx context.Context, arg GetTransactionsParams) ([]History, error) {
@@ -182,11 +182,11 @@ VALUES (?, ?, ?, ?, ?)
 `
 
 type InsertTransactionParams struct {
-	ID        string
-	Sender    string
-	Receiver  string
-	Amount    sql.NullFloat64
-	Timestamp sql.NullString
+	ID        string          `json:"id"`
+	Sender    string          `json:"sender"`
+	Receiver  string          `json:"receiver"`
+	Amount    sql.NullFloat64 `json:"amount"`
+	Timestamp sql.NullString  `json:"timestamp"`
 }
 
 func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionParams) error {
@@ -207,9 +207,9 @@ WHERE id = ? AND balance >= ?
 `
 
 type WithdrawParams struct {
-	Balance   sql.NullFloat64
-	ID        string
-	Balance_2 sql.NullFloat64
+	Balance   sql.NullFloat64 `json:"balance"`
+	ID        string          `json:"id"`
+	Balance_2 sql.NullFloat64 `json:"balance_2"`
 }
 
 func (q *Queries) Withdraw(ctx context.Context, arg WithdrawParams) error {
