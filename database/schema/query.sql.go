@@ -16,13 +16,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateAccountParams struct {
-	ID        string          `json:"id"`
-	FirstName sql.NullString  `json:"first_name"`
-	LastName  sql.NullString  `json:"last_name"`
-	Username  sql.NullString  `json:"username"`
-	Email     sql.NullString  `json:"email"`
-	Password  sql.NullString  `json:"password"`
-	Balance   sql.NullFloat64 `json:"balance"`
+	ID        string         `json:"id"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Username  string         `json:"username"`
+	Email     sql.NullString `json:"email"`
+	Password  string         `json:"password"`
+	Balance   float64        `json:"balance"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
@@ -55,8 +55,8 @@ WHERE id = ?
 `
 
 type DepositParams struct {
-	Balance sql.NullFloat64 `json:"balance"`
-	ID      string          `json:"id"`
+	Balance float64 `json:"balance"`
+	ID      string  `json:"id"`
 }
 
 func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
@@ -71,12 +71,12 @@ WHERE id = ?
 `
 
 type GetAccountByIDRow struct {
-	ID        string          `json:"id"`
-	FirstName sql.NullString  `json:"first_name"`
-	LastName  sql.NullString  `json:"last_name"`
-	Username  sql.NullString  `json:"username"`
-	Email     sql.NullString  `json:"email"`
-	Balance   sql.NullFloat64 `json:"balance"`
+	ID        string         `json:"id"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Username  string         `json:"username"`
+	Email     sql.NullString `json:"email"`
+	Balance   float64        `json:"balance"`
 }
 
 func (q *Queries) GetAccountByID(ctx context.Context, id string) (GetAccountByIDRow, error) {
@@ -100,15 +100,15 @@ WHERE username = ?
 `
 
 type GetAccountByUsernameRow struct {
-	ID        string          `json:"id"`
-	FirstName sql.NullString  `json:"first_name"`
-	LastName  sql.NullString  `json:"last_name"`
-	Username  sql.NullString  `json:"username"`
-	Email     sql.NullString  `json:"email"`
-	Balance   sql.NullFloat64 `json:"balance"`
+	ID        string         `json:"id"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Username  string         `json:"username"`
+	Email     sql.NullString `json:"email"`
+	Balance   float64        `json:"balance"`
 }
 
-func (q *Queries) GetAccountByUsername(ctx context.Context, username sql.NullString) (GetAccountByUsernameRow, error) {
+func (q *Queries) GetAccountByUsername(ctx context.Context, username string) (GetAccountByUsernameRow, error) {
 	row := q.db.QueryRowContext(ctx, getAccountByUsername, username)
 	var i GetAccountByUsernameRow
 	err := row.Scan(
@@ -128,9 +128,9 @@ FROM account
 WHERE id = ?
 `
 
-func (q *Queries) GetBalance(ctx context.Context, id string) (sql.NullFloat64, error) {
+func (q *Queries) GetBalance(ctx context.Context, id string) (float64, error) {
 	row := q.db.QueryRowContext(ctx, getBalance, id)
-	var balance sql.NullFloat64
+	var balance float64
 	err := row.Scan(&balance)
 	return balance, err
 }
@@ -182,11 +182,11 @@ VALUES (?, ?, ?, ?, ?)
 `
 
 type InsertTransactionParams struct {
-	ID        string          `json:"id"`
-	Sender    string          `json:"sender"`
-	Receiver  string          `json:"receiver"`
-	Amount    sql.NullFloat64 `json:"amount"`
-	Timestamp sql.NullString  `json:"timestamp"`
+	ID        string         `json:"id"`
+	Sender    string         `json:"sender"`
+	Receiver  string         `json:"receiver"`
+	Amount    float64        `json:"amount"`
+	Timestamp sql.NullString `json:"timestamp"`
 }
 
 func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionParams) error {
@@ -207,9 +207,9 @@ WHERE id = ? AND balance >= ?
 `
 
 type WithdrawParams struct {
-	Balance   sql.NullFloat64 `json:"balance"`
-	ID        string          `json:"id"`
-	Balance_2 sql.NullFloat64 `json:"balance_2"`
+	Balance   float64 `json:"balance"`
+	ID        string  `json:"id"`
+	Balance_2 float64 `json:"balance_2"`
 }
 
 func (q *Queries) Withdraw(ctx context.Context, arg WithdrawParams) error {

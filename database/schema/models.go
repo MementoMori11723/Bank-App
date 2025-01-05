@@ -9,19 +9,19 @@ import (
 )
 
 type Account struct {
-	ID        string          `json:"id"`
-	FirstName sql.NullString  `json:"first_name"`
-	LastName  sql.NullString  `json:"last_name"`
-	Username  sql.NullString  `json:"username"`
-	Email     sql.NullString  `json:"email"`
-	Password  sql.NullString  `json:"password"`
-	Balance   sql.NullFloat64 `json:"balance"`
+	ID        string         `json:"id"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Username  string         `json:"username"`
+	Email     sql.NullString `json:"email"`
+	Password  string         `json:"password"`
+	Balance   float64        `json:"balance"`
 }
 
 type History struct {
-	ID        string          `json:"id"`
-	Sender    string          `json:"sender"`
-	Receiver  string          `json:"receiver"`
-	Amount    sql.NullFloat64 `json:"amount"`
-	Timestamp sql.NullString  `json:"timestamp"`
+	ID        string         `json:"id"`
+	Sender    string         `json:"sender"`
+	Receiver  string         `json:"receiver"`
+	Amount    float64        `json:"amount"`
+	Timestamp sql.NullString `json:"timestamp"`
 }

@@ -3,6 +3,8 @@ package bank
 import (
 	"bank-app/database/schema"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 
@@ -28,6 +30,12 @@ func Create(r *http.Request) (Responce, error) {
 	}
 
 	data.ID = uuid.New().String()
+
+  h := sha256.New()
+  h.Write([]byte(data.Password))
+  res := h.Sum(nil)
+
+  data.Password = hex.EncodeToString(res)
 
 	user := schema.New(db)
 	err = user.CreateAccount(context.Background(), data)
