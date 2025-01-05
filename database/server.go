@@ -24,10 +24,8 @@ func Server(Port, db_path string) {
 
 	for route, handler := range routes {
 		mux.HandleFunc(route,
-			middleware.Log(
-				middleware.Responce(
-					handler,
-				),
+			middleware.Responce(
+				handler,
 			),
 		)
 	}
