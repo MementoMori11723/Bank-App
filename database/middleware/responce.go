@@ -12,6 +12,7 @@ type ErrorResponse struct {
 
 func Responce[T any](next func(*http.Request) (T, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Request", r.Method, r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		data, err := next(r)
