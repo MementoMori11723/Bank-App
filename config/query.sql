@@ -10,7 +10,7 @@ WHERE id = ?;
 -- name: Withdraw :exec
 UPDATE account
 SET balance = balance - ?
-WHERE id = ? AND balance >= ?;
+WHERE id = ?;
 
 -- name: GetBalance :one
 SELECT balance
@@ -35,7 +35,7 @@ WHERE id = ?;
 -- name: GetAccountByUsername :one
 SELECT id, first_name, last_name, username, email, balance
 FROM account
-WHERE username = ?;
+WHERE username = ? AND password = ?;
 
 -- name: DeleteAccount :exec
 DELETE FROM account

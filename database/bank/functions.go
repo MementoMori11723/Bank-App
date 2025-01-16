@@ -6,6 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -31,11 +33,11 @@ func Create(r *http.Request) (Responce, error) {
 
 	data.ID = uuid.New().String()
 
-  h := sha256.New()
-  h.Write([]byte(data.Password))
-  res := h.Sum(nil)
+	h := sha256.New()
+	h.Write([]byte(data.Password))
+	res := h.Sum(nil)
 
-  data.Password = hex.EncodeToString(res)
+	data.Password = hex.EncodeToString(res)
 
 	user := schema.New(db)
 	err = user.CreateAccount(context.Background(), data)
@@ -98,7 +100,7 @@ func Balance(r *http.Request) (Responce, error) {
 	}
 
 	return Responce{
-		Message: "Here is your balance!",
+		Message: fmt.Sprint("Your balance ", balance, "!"),
 		Data: schema.Account{
 			Balance: balance,
 		},
@@ -120,6 +122,7 @@ func Withdraw(r *http.Request) (Responce, error) {
 
 	user := schema.New(db)
 	err = user.Withdraw(context.Background(), data)
+	slog.Info(err.Error())
 	if err != nil {
 		return Responce{}, err
 	}
@@ -185,26 +188,58 @@ func Transactions(r *http.Request) (Responce, error) {
 }
 
 func Transfer(r *http.Request) (Responce, error) {
-  var data schema.InsertTransactionParams
+	var data schema.InsertTransactionParams
 
-  err := json.NewDecoder(r.Body).Decode(&data)
-  if err != nil {
-    return Responce{}, err
-  }
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		return Responce{}, err
+	}
 
-  db, err := connect()
-  if err != nil {
-    return Responce{}, err
-  }
+	db, err := connect()
+	if err != nil {
+		return Responce{}, err
+	}
 
-  user := schema.New(db)
-  err = user.InsertTransaction(context.Background(), data)
-  if err != nil {
-    return Responce{}, err
-  }
+	user := schema.New(db)
+	err = user.InsertTransaction(context.Background(), data)
+	if err != nil {
+		return Responce{}, err
+	}
 
 	return Responce{
 		Message: "Successfully transfered!",
 		Data:    schema.Account{},
+	}, nil
+}
+
+func GetIdByUserName(r *http.Request) (Responce, error) {
+	var data schema.GetAccountByUsernameParams
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		return Responce{}, err
+	}
+
+	db, err := connect()
+	if err != nil {
+		return Responce{}, err
+	}
+
+	h := sha256.New()
+	h.Write([]byte(data.Password))
+	hash := h.Sum(nil)
+
+	data.Password = hex.EncodeToString(hash)
+
+	user := schema.New(db)
+	res, err := user.GetAccountByUsername(context.Background(), data)
+	if err != nil {
+		return Responce{}, err
+	}
+
+	return Responce{
+		Message: "Found User!",
+		Data: schema.Account{
+			ID: res.ID,
+		},
 	}, nil
 }

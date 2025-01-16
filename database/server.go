@@ -16,6 +16,7 @@ var routes = map[string]func(*http.Request) (bank.Responce, error){
 	"/transactions": bank.Transactions,
 	"/transfer":     bank.Transfer,
 	"/delete":       bank.Delete,
+	"/getId":        bank.GetIdByUserName,
 }
 
 func Server(Port, db_path string) {

@@ -12,39 +12,39 @@ import (
 	"time"
 )
 
-func get_response(_ string, reqBody []byte) (string, error) {
+func get_response(url string, reqBody []byte) (bank.Responce, error) {
 	client := http.Client{
 		Timeout: time.Second * 30,
 	}
 
 	req, err := http.NewRequest(
-		"GET", "http://localhost:11000/create",
+		"GET", "http://localhost:11000/"+url,
 		bytes.NewBuffer(reqBody),
 	)
 	if err != nil {
-		return "", err
+		return bank.Responce{}, err
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return bank.Responce{}, err
 	}
 
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return bank.Responce{}, err
 	}
 
 	var bodyRes bank.Responce
 
 	err = json.Unmarshal(body, &bodyRes)
 	if err != nil {
-		return "", err
+		return bank.Responce{}, err
 	}
 
-	return bodyRes.Message, nil
+	return bodyRes, nil
 }
 
 func fetch_responce(url string) {
@@ -53,8 +53,35 @@ func fetch_responce(url string) {
 	if err != nil {
 		fmt.Println("Error: ", err)
 	} else {
-		fmt.Println(res)
+		fmt.Println(res.Message)
 	}
+}
+
+func get_id(username, password string) (schema.Account, error) {
+	data, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: username,
+		Password: password,
+	})
+	if err != nil {
+		return schema.Account{}, err
+	}
+
+	res, err := get_response("getId", data)
+	if err != nil {
+		return schema.Account{}, err
+	}
+
+	var account schema.Account
+	accountData, err := json.Marshal(res.Data)
+	if err != nil {
+		return schema.Account{}, err
+	}
+	err = json.Unmarshal(accountData, &account)
+	if err != nil {
+		return schema.Account{}, err
+	}
+
+	return account, nil
 }
 
 var subMenu = map[string]func() []byte{
@@ -72,7 +99,7 @@ var subMenu = map[string]func() []byte{
 		fmt.Scanln(&password)
 		fmt.Print("Email : ")
 		fmt.Scanln(&email)
-		fmt.Print("balance : ")
+		fmt.Print("Amount : ")
 		fmt.Scanln(&balance)
 
 		data, err := json.Marshal(schema.CreateAccountParams{
@@ -93,9 +120,85 @@ var subMenu = map[string]func() []byte{
 		return data
 	},
 
-	"deposit":      func() []byte { return []byte{} },
-	"withdraw":     func() []byte { return []byte{} },
-	"balance":      func() []byte { return []byte{} },
+	"deposit": func() []byte {
+		var userName, password string
+		var amount float64
+
+		fmt.Print("Username : ")
+		fmt.Scanln(&userName)
+		fmt.Print("Password : ")
+		fmt.Scanln(&password)
+		fmt.Print("Amount : ")
+		fmt.Scanln(&amount)
+
+		res, err := get_id(userName, password)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		data, err := json.Marshal(schema.DepositParams{
+			Balance: amount,
+			ID:      res.ID,
+		})
+		if err != nil {
+			fmt.Println("Error", err)
+		}
+
+		return data
+	},
+
+	"withdraw": func() []byte {
+		var userName, password string
+		var amount float64
+
+		fmt.Print("Username : ")
+		fmt.Scanln(&userName)
+		fmt.Print("Password : ")
+		fmt.Scanln(&password)
+		fmt.Print("Amount : ")
+		fmt.Scanln(&amount)
+
+		res, err := get_id(userName, password)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		data, err := json.Marshal(schema.WithdrawParams{
+			Balance: amount,
+			ID:      res.ID,
+		})
+		if err != nil {
+			fmt.Println("Error", err)
+		}
+
+		return data
+	},
+
+	"balance": func() []byte {
+		var userName, password string
+		type dataType struct {
+			ID string
+		}
+
+		fmt.Print("Username : ")
+		fmt.Scanln(&userName)
+		fmt.Print("Password : ")
+		fmt.Scanln(&password)
+		res, err := get_id(userName, password)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		data, err := json.Marshal(dataType{
+			ID: res.ID,
+		})
+		if err != nil {
+			fmt.Println("Error", err)
+		}
+
+		return data
+	},
+
 	"transactions": func() []byte { return []byte{} },
 	"transfer":     func() []byte { return []byte{} },
 }

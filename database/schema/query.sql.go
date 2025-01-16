@@ -96,8 +96,13 @@ func (q *Queries) GetAccountByID(ctx context.Context, id string) (GetAccountByID
 const getAccountByUsername = `-- name: GetAccountByUsername :one
 SELECT id, first_name, last_name, username, email, balance
 FROM account
-WHERE username = ?
+WHERE username = ? AND password = ?
 `
+
+type GetAccountByUsernameParams struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 type GetAccountByUsernameRow struct {
 	ID        string         `json:"id"`
@@ -108,8 +113,8 @@ type GetAccountByUsernameRow struct {
 	Balance   float64        `json:"balance"`
 }
 
-func (q *Queries) GetAccountByUsername(ctx context.Context, username string) (GetAccountByUsernameRow, error) {
-	row := q.db.QueryRowContext(ctx, getAccountByUsername, username)
+func (q *Queries) GetAccountByUsername(ctx context.Context, arg GetAccountByUsernameParams) (GetAccountByUsernameRow, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByUsername, arg.Username, arg.Password)
 	var i GetAccountByUsernameRow
 	err := row.Scan(
 		&i.ID,
@@ -203,16 +208,15 @@ func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionPa
 const withdraw = `-- name: Withdraw :exec
 UPDATE account
 SET balance = balance - ?
-WHERE id = ? AND balance >= ?
+WHERE id = ?
 `
 
 type WithdrawParams struct {
-	Balance   float64 `json:"balance"`
-	ID        string  `json:"id"`
-	Balance_2 float64 `json:"balance_2"`
+	Balance float64 `json:"balance"`
+	ID      string  `json:"id"`
 }
 
 func (q *Queries) Withdraw(ctx context.Context, arg WithdrawParams) error {
-	_, err := q.db.ExecContext(ctx, withdraw, arg.Balance, arg.ID, arg.Balance_2)
+	_, err := q.db.ExecContext(ctx, withdraw, arg.Balance, arg.ID)
 	return err
 }
