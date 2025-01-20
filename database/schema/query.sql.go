@@ -51,16 +51,17 @@ func (q *Queries) DeleteAccount(ctx context.Context, id string) error {
 const deposit = `-- name: Deposit :exec
 UPDATE account
 SET balance = balance + ?
-WHERE id = ?
+WHERE id = ? OR username = ?
 `
 
 type DepositParams struct {
-	Balance float64 `json:"balance"`
-	ID      string  `json:"id"`
+	Balance  float64 `json:"balance"`
+	ID       string  `json:"id"`
+	Username string  `json:"username"`
 }
 
 func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
-	_, err := q.db.ExecContext(ctx, deposit, arg.Balance, arg.ID)
+	_, err := q.db.ExecContext(ctx, deposit, arg.Balance, arg.ID, arg.Username)
 	return err
 }
 

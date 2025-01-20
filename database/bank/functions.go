@@ -4,18 +4,21 @@ import (
 	"bank-app/database/schema"
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type Responce struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Message string           `json:"message"`
+	Data    []schema.History `json:"data,omitempty"`
+	UserId  string           `json:"user_id,omitempty"`
 }
 
 func Create(r *http.Request) (Responce, error) {
@@ -27,6 +30,7 @@ func Create(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -47,9 +51,6 @@ func Create(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Account Created!",
-		Data: schema.Account{
-			ID: data.ID,
-		},
 	}, nil
 }
 
@@ -62,6 +63,7 @@ func Deposit(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -74,7 +76,6 @@ func Deposit(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Added Money!",
-		Data:    nil,
 	}, nil
 }
 
@@ -89,6 +90,7 @@ func Balance(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -101,9 +103,6 @@ func Balance(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: fmt.Sprint("Your balance ", balance, "!"),
-		Data: schema.Account{
-			Balance: balance,
-		},
 	}, nil
 }
 
@@ -116,6 +115,7 @@ func Withdraw(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -129,7 +129,6 @@ func Withdraw(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Took Money!",
-		Data:    nil,
 	}, nil
 }
 
@@ -144,6 +143,7 @@ func Delete(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -156,9 +156,6 @@ func Delete(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Account Deleted!",
-		Data: schema.Account{
-			ID: data.ID,
-		},
 	}, nil
 }
 
@@ -171,6 +168,7 @@ func Transactions(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -196,8 +194,15 @@ func Transfer(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
+	}
+
+	data.ID = uuid.New().String()
+	data.Timestamp = sql.NullString{
+		String: time.Now().Format("2006-01-02 15:04:05"),
+		Valid:  true,
 	}
 
 	user := schema.New(db)
@@ -208,7 +213,6 @@ func Transfer(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Successfully transfered!",
-		Data:    schema.Account{},
 	}, nil
 }
 
@@ -220,6 +224,7 @@ func GetIdByUserName(r *http.Request) (Responce, error) {
 	}
 
 	db, err := connect()
+	defer db.Close()
 	if err != nil {
 		return Responce{}, err
 	}
@@ -238,8 +243,6 @@ func GetIdByUserName(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Found User!",
-		Data: schema.Account{
-			ID: res.ID,
-		},
+		UserId:  res.ID,
 	}, nil
 }

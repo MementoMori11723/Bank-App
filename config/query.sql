@@ -5,7 +5,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?);
 -- name: Deposit :exec
 UPDATE account
 SET balance = balance + ?
-WHERE id = ?;
+WHERE id = ? OR username = ?;
 
 -- name: Withdraw :exec
 UPDATE account

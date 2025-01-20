@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
-	"io"
 	"log/slog"
 	"os"
 )
@@ -42,8 +41,7 @@ func New() (string, string, func()) {
     file.Close()
   }
 
-	w := io.MultiWriter(os.Stderr, file)
-	logger := slog.New(slog.NewJSONHandler(w, nil))
+	logger := slog.New(slog.NewJSONHandler(file, nil))
 	slog.SetDefault(logger)
 
 	return data.Server.Port, data.Database.Path, cleanup
