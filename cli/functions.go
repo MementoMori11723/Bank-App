@@ -9,17 +9,22 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"time"
 )
+
+var baseURL string
 
 func get_response(url string, reqBody []byte) (bank.Responce, error) {
 	client := http.Client{
 		Timeout: time.Second * 30,
 	}
 
+	if baseURL == "" {
+		return bank.Responce{}, fmt.Errorf("Base URL not set")
+	}
+
 	req, err := http.NewRequest(
-		"GET", "http://localhost:11000/"+url,
+		"GET", baseURL+url,
 		bytes.NewBuffer(reqBody),
 	)
 	if err != nil {
@@ -89,27 +94,6 @@ func get_id(username, password string) (string, error) {
 	}
 
 	return res.UserId, nil
-}
-
-var subMenu = map[string]func() []byte{
-	"create":       create,
-	"deposit":      deposit,
-	"withdraw":     withdraw,
-	"balance":      balance,
-	"transactions": history,
-	"transfer":     transfer,
-}
-
-func inputFunc[T any](keys []string, m map[string]*T) {
-	for _, key := range keys {
-		fmt.Print(key, " : ")
-		fmt.Scanln(m[key])
-	}
-}
-
-func errorFunc(err error) {
-	fmt.Println("Error: ", err)
-	os.Exit(1)
 }
 
 func create() []byte {
@@ -198,8 +182,6 @@ func withdraw() []byte {
 	if err != nil {
 		errorFunc(err)
 	}
-
-	fmt.Println(res)
 
 	data, err := json.Marshal(schema.WithdrawParams{
 		Balance: amount,
@@ -316,17 +298,8 @@ func transfer() []byte {
 		Amount:   amount,
 	})
 	if err != nil {
-    errorFunc(err)
+		errorFunc(err)
 	}
 
-	return data
-}
-
-func sub_menu(menu string) []byte {
-	run, ok := subMenu[menu]
-	if !ok {
-		panic("Error Occured at sub_menu!")
-	}
-	data := run()
 	return data
 }

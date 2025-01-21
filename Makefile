@@ -8,6 +8,9 @@ help:
 run:
 	@echo "Running the Go application"
 	@go run . $(ARGS)
+build:
+	@echo "Building the Go application"
+	@go build -o bin/app .
 sql:
 	@echo "Generating sql queries"
 	@sqlc generate -f config/sqlc.yml

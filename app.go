@@ -15,18 +15,19 @@ func main() {
 
   web_ui := flag.Bool("web", false, "flag to run the web ui")
 	port := flag.String("port", "8000", "port to run the web ui on")
+  server_port := flag.String("server_port", serverPort, "port to run the server on")
 	flag.Parse()
 
 	fmt.Println("Welcome to the bank")
 
 	go func() {
-		database.Server(serverPort, db_path)
+		database.Server(*server_port, db_path)
 	}()
 
 	if *web_ui {
-		web.Start(*port)
+		web.Start(*port, *server_port)
 	} else {
-		cli.Menu()
+		cli.Menu(*server_port)
 		fmt.Println("Goodbye")
 	}
 }

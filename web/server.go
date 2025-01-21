@@ -19,7 +19,7 @@ var (
 	}
 )
 
-func Start(port string) {
+func Start(port, server_port string) {
 	go func() {
 		mux := http.NewServeMux()
 		for route, handler := range routes {
@@ -29,11 +29,11 @@ func Start(port string) {
 			Addr:    ":" + port,
 			Handler: mux,
 		}
-		slog.Info("Starting server on http://localhost:" + port)
-		slog.Info("Press enter to stop the server...")
+		fmt.Println("Starting server on http://localhost:" + port)
+		fmt.Println("Press enter to stop the server...")
 		err := client.ListenAndServe()
 		if err != nil {
-      slog.Error(err.Error())
+			slog.Error(err.Error())
 			return
 		}
 	}()
