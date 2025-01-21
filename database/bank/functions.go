@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -122,7 +121,6 @@ func Withdraw(r *http.Request) (Responce, error) {
 
 	user := schema.New(db)
 	err = user.Withdraw(context.Background(), data)
-	slog.Info(err.Error())
 	if err != nil {
 		return Responce{}, err
 	}
@@ -134,7 +132,8 @@ func Withdraw(r *http.Request) (Responce, error) {
 
 func Delete(r *http.Request) (Responce, error) {
 	var data struct {
-		ID string `json:"id"`
+		Username string `json:"username"`
+		ID       string `json:"id"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -150,6 +149,14 @@ func Delete(r *http.Request) (Responce, error) {
 
 	user := schema.New(db)
 	err = user.DeleteAccount(context.Background(), data.ID)
+	if err != nil {
+		return Responce{}, err
+	}
+
+	err = user.DeleteHistory(context.Background(), schema.DeleteHistoryParams{
+		Sender:   data.Username,
+		Receiver: data.Username,
+	})
 	if err != nil {
 		return Responce{}, err
 	}
@@ -244,5 +251,37 @@ func GetIdByUserName(r *http.Request) (Responce, error) {
 	return Responce{
 		Message: "Found User!",
 		UserId:  res.ID,
+	}, nil
+}
+
+func Details(r *http.Request) (Responce, error) {
+	var data schema.GetAccountByUsernameParams
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		return Responce{}, err
+	}
+
+	db, err := connect()
+	defer db.Close()
+	if err != nil {
+		return Responce{}, err
+	}
+
+	user := schema.New(db)
+	res, err := user.GetAccountByUsername(context.Background(), data)
+	if err != nil {
+		return Responce{}, err
+	}
+
+	return Responce{
+		Message: fmt.Sprintf(
+			"User Details: ID: %s FirstName: %s LastName: %s Username: %s Email: %v Balance: %.2f",
+			res.ID,
+			res.FirstName,
+			res.LastName,
+			res.Username,
+			res.Email,
+			res.Balance,
+		),
 	}, nil
 }

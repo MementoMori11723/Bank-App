@@ -1,31 +1,35 @@
 {{define "title"}}Home{{end}} {{define "content"}}
-<h1>Bank App</h1>
-<a href="/about">About</a>
-<p>
-  Ipsum a impedit alias maxime totam? Eos perspiciatis fuga vel consequuntur
-  dicta Sint velit maxime dolor non accusantium? Vel veritatis sit repellat quam
-  iure quidem Voluptatum fugiat eos facere saepe!
-</p>
-<p>
-  Sit totam dignissimos eligendi consectetur veritatis illo accusantium Sint
-  laborum voluptates unde accusantium a nam modi sint Voluptates ad explicabo
-  quibusdam perspiciatis eius Iste recusandae qui in non dolorem Maiores
-</p>
-<p>
-  Amet obcaecati sint exercitationem quidem vero veritatis. Vitae voluptas odit
-  vero modi est Illum minima nesciunt harum doloremque dolores? Quo tempora
-  optio neque ex animi Libero quia sed voluptate nam
-</p>
-<p>
-  Amet quod cumque est dolor ipsam Animi quaerat tempore aperiam incidunt
-  dignissimos Voluptates dolores at nihil perferendis corrupti. Totam blanditiis
-  delectus ex repudiandae cupiditate? Dolores quasi nisi repellat error
-  perferendis!
-</p>
-<p>
-  Sit tenetur nostrum fugiat rerum accusamus Voluptatem fugiat modi nesciunt
-  accusamus sint Quidem inventore ea atque qui architecto quidem. Quidem
-  adipisci iste incidunt ad deserunt repudiandae Quisquam voluptatem reiciendis
-  incidunt
-</p>
+<!-- Hero Section -->
+<section class="bg-blue-600 text-white py-20 hero-section">
+  <div class="container mx-auto text-center px-6">
+    <h2 class="text-4xl font-bold mb-4">Welcome to Simple Bank</h2>
+    <p class="text-lg mb-8">
+      Effortlessly manage your finances with our secure and user-friendly
+      platform.
+    </p>
+    <a href="/dashboard" class="bg-white text-blue-700 px-6 py-3 rounded-full shadow-lg hover:bg-gray-200">Go to
+      Dashboard</a>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="py-16 bg-gray-50">
+  <div class="container mx-auto text-center px-6">
+    <h3 class="text-3xl font-bold mb-8">Our Services</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
+        <h4 class="text-xl font-bold mb-4">Savings Accounts</h4>
+        <p class="text-gray-600">
+          Grow your wealth with high-interest savings accounts.
+        </p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
+        <h4 class="text-xl font-bold mb-4">Secure Banking</h4>
+        <p class="text-gray-600">
+          Your security is our priority with state-of-the-art technology.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 {{end}}

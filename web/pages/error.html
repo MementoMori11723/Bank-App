@@ -1,9 +1,20 @@
 {{define "title"}}Error{{end}} {{define "content"}}
-<h1>404</h1>
-<a href="/">Go Back to Home</a>
-<p>
-  Ipsum a impedit alias maxime totam? Eos perspiciatis fuga vel consequuntur
-  dicta Sint velit maxime dolor non accusantium? Vel veritatis sit repellat quam
-  iure quidem Voluptatum fugiat eos facere saepe!
-</p>
+<section class="flex items-center justify-center bg-gray-100 scale-100">
+  <div class="text-center px-6 py-12">
+    <h1 class="text-6xl font-extrabold text-blue-800 mb-4">404</h1>
+    <h2 class="text-3xl font-semibold text-gray-700 mb-6">
+      Oops! Page Not Found
+    </h2>
+    <p class="text-lg text-gray-600 mb-6 text-justify">
+      It seems like the page you're looking for doesn't exist or has been moved.
+      Don't worry, you can easily get back on track by choosing one of the
+      options below.
+    </p>
+    <div class="flex justify-center space-x-4">
+      <a href="/" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">Go to Home</a>
+      <a href="/about#contact" class="bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition">Contact Us</a>
+    </div>
+  </div>
+</section>
+
 {{end}}

@@ -5,30 +5,42 @@ import (
 	"os"
 )
 
-type command map[string]string
+type (
+	command    map[string]subCommand
+	subCommand struct {
+		description string
+		run         func() []byte
+	}
+)
 
 var (
 	commands = command{
-		"create":       "create a new account",
-		"deposit":      "deposit money",
-		"withdraw":     "withdraw money",
-		"balance":      "check balance",
-		"transactions": "check transactions",
-		"transfer":     "transfer money",
+		"create": subCommand{
+			"create account", create,
+		},
+		"deposit": subCommand{
+			"deposit money", deposit,
+		},
+		"withdraw": subCommand{
+			"withdraw money", withdraw,
+		},
+		"balance": subCommand{
+			"check balance", balance,
+		},
+		"transfer": subCommand{
+			"transfer money", transfer,
+		},
+		"delete": subCommand{
+			"delete account", deleteFunc,
+		},
+		"transactions": subCommand{
+			"check transaction history", history,
+		},
 	}
 
-	notCommands = command{
-		"help": "show this help",
-		"exit": "exit the application",
-	}
-
-	subMenu = map[string]func() []byte{
-		"create":       create,
-		"deposit":      deposit,
-		"withdraw":     withdraw,
-		"balance":      balance,
-		"transactions": history,
-		"transfer":     transfer,
+	notCommands = map[string]string{
+		"help": "show available commands",
+		"exit": "exit the program",
 	}
 )
 
@@ -45,20 +57,20 @@ func errorFunc(err error) {
 }
 
 func sub_menu(menu string) []byte {
-	run, ok := subMenu[menu]
+	function, ok := commands[menu]
 	if !ok {
 		panic("Error Occured at sub_menu!")
 	}
-	data := run()
+	data := function.run()
 	return data
 }
 
 func Menu(port string) {
-  if port == "" {
-    fmt.Println("Port is not set!")
-    return
-  }
-  baseURL = "http://localhost:" + port + "/"
+	if port == "" {
+		fmt.Println("Port is not set!")
+		return
+	}
+	baseURL = "http://localhost:" + port + "/"
 	var cmd string
 	for true {
 		fmt.Print("Enter command: ")
@@ -69,8 +81,8 @@ func Menu(port string) {
 			for command, description := range notCommands {
 				fmt.Printf("%-12s - %s\n", command, description)
 			}
-			for command, description := range commands {
-				fmt.Printf("%-12s - %s\n", command, description)
+			for command, data := range commands {
+				fmt.Printf("%-12s - %s\n", command, data.description)
 			}
 		} else {
 			if ok {

@@ -24,7 +24,7 @@ func get_response(url string, reqBody []byte) (bank.Responce, error) {
 	}
 
 	req, err := http.NewRequest(
-		"GET", baseURL+url,
+		"POST", baseURL+url,
 		bytes.NewBuffer(reqBody),
 	)
 	if err != nil {
@@ -97,18 +97,23 @@ func get_id(username, password string) (string, error) {
 }
 
 func create() []byte {
-	var firstName, lastName, userName, password, email string
+	var firstName, lastName, userName, password, confirmPassword, email string
 	var balance float64
 
-	keys := []string{"First Name", "Last Name", "Username", "Password", "Email"}
+	keys := []string{"First Name", "Last Name", "Email", "Username", "Password", "Confirm Password"}
 
 	inputFunc(keys, map[string]*string{
-		"First Name": &firstName,
-		"Last Name":  &lastName,
-		"Username":   &userName,
-		"Password":   &password,
-		"Email":      &email,
+		"First Name":       &firstName,
+		"Last Name":        &lastName,
+		"Username":         &userName,
+		"Password":         &password,
+		"Confirm Password": &confirmPassword,
+		"Email":            &email,
 	})
+
+	if password != confirmPassword {
+		errorFunc(fmt.Errorf("Passwords do not match!"))
+	}
 
 	inputFunc([]string{"Amount"}, map[string]*float64{
 		"Amount": &balance,
@@ -296,6 +301,35 @@ func transfer() []byte {
 		Sender:   userName,
 		Receiver: reciverUserName,
 		Amount:   amount,
+	})
+	if err != nil {
+		errorFunc(err)
+	}
+
+	return data
+}
+
+func deleteFunc() []byte {
+	var userName, password string
+
+	keys := []string{"Username", "Password"}
+
+	inputFunc(keys, map[string]*string{
+		"Username": &userName,
+		"Password": &password,
+	})
+
+	res, err := get_id(userName, password)
+	if err != nil {
+		errorFunc(err)
+	}
+
+	data, err := json.Marshal(struct {
+		Username string `json:"username"`
+		ID       string `json:"id"`
+	}{
+		Username: userName,
+		ID:       res,
 	})
 	if err != nil {
 		errorFunc(err)

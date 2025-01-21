@@ -48,6 +48,23 @@ func (q *Queries) DeleteAccount(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteHistory = `-- name: DeleteHistory :exec
+DELETE FROM history
+WHERE (sender = ? OR receiver = ?)
+  AND NOT EXISTS (SELECT 1 FROM account WHERE username = sender)
+  AND NOT EXISTS (SELECT 1 FROM account WHERE username = receiver)
+`
+
+type DeleteHistoryParams struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+}
+
+func (q *Queries) DeleteHistory(ctx context.Context, arg DeleteHistoryParams) error {
+	_, err := q.db.ExecContext(ctx, deleteHistory, arg.Sender, arg.Receiver)
+	return err
+}
+
 const deposit = `-- name: Deposit :exec
 UPDATE account
 SET balance = balance + ?
@@ -63,35 +80,6 @@ type DepositParams struct {
 func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
 	_, err := q.db.ExecContext(ctx, deposit, arg.Balance, arg.ID, arg.Username)
 	return err
-}
-
-const getAccountByID = `-- name: GetAccountByID :one
-SELECT id, first_name, last_name, username, email, balance
-FROM account
-WHERE id = ?
-`
-
-type GetAccountByIDRow struct {
-	ID        string         `json:"id"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	Username  string         `json:"username"`
-	Email     sql.NullString `json:"email"`
-	Balance   float64        `json:"balance"`
-}
-
-func (q *Queries) GetAccountByID(ctx context.Context, id string) (GetAccountByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, getAccountByID, id)
-	var i GetAccountByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.FirstName,
-		&i.LastName,
-		&i.Username,
-		&i.Email,
-		&i.Balance,
-	)
-	return i, err
 }
 
 const getAccountByUsername = `-- name: GetAccountByUsername :one
