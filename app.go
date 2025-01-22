@@ -14,8 +14,8 @@ func main() {
   defer close_file()
 
   web_ui := flag.Bool("web", false, "flag to run the web ui")
-	port := flag.String("port", "8000", "port to run the web ui on")
-  server_port := flag.String("server_port", serverPort, "port to run the server on")
+	port := flag.String("port", "8080", "port to run the web ui on")
+  server_port := flag.String("server-port", serverPort, "port to run the server on")
 	flag.Parse()
 
 	fmt.Println("Welcome to the bank")

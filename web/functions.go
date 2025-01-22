@@ -6,10 +6,10 @@ import (
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
-  if r.URL.Path != "/" {
-    http.Redirect(w, r, "/error", http.StatusFound)
-  }
-	tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/home.html")
+	if r.URL.Path != "/" {
+		http.Redirect(w, r, "/error", http.StatusFound)
+	}
+	tmpl, err := template.ParseFS(pages, layout, pagesDir+"home.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -20,7 +20,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func about(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/about.html")
+	tmpl, err := template.ParseFS(pages, layout, pagesDir+"about.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -31,8 +31,8 @@ func about(w http.ResponseWriter, r *http.Request) {
 }
 
 func errorPage(w http.ResponseWriter, _ *http.Request) {
-  w.WriteHeader(http.StatusNotFound)
-	tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/error.html")
+	w.WriteHeader(http.StatusNotFound)
+	tmpl, err := template.ParseFS(pages, layout, pagesDir+"error.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -43,7 +43,7 @@ func errorPage(w http.ResponseWriter, _ *http.Request) {
 }
 
 func dashboard(w http.ResponseWriter, _ *http.Request) {
-	tmpl, err := template.ParseFS(pages, "pages/layout.html", "pages/dashboard/index.html")
+	tmpl, err := template.ParseFS(pages, layout, pagesDir+dashboardDir+"index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

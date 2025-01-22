@@ -4,7 +4,6 @@ import (
 	"bank-app/database/schema"
 	"context"
 	"crypto/sha256"
-	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -36,11 +35,7 @@ func Create(r *http.Request) (Responce, error) {
 
 	data.ID = uuid.New().String()
 
-	h := sha256.New()
-	h.Write([]byte(data.Password))
-	res := h.Sum(nil)
-
-	data.Password = hex.EncodeToString(res)
+	data.Password = encryptPassword(data.Password)
 
 	user := schema.New(db)
 	err = user.CreateAccount(context.Background(), data)
@@ -75,33 +70,6 @@ func Deposit(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Added Money!",
-	}, nil
-}
-
-func Balance(r *http.Request) (Responce, error) {
-	var data struct {
-		ID string `json:"id"`
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil {
-		return Responce{}, err
-	}
-
-	db, err := connect()
-	defer db.Close()
-	if err != nil {
-		return Responce{}, err
-	}
-
-	user := schema.New(db)
-	balance, err := user.GetBalance(context.Background(), data.ID)
-	if err != nil {
-		return Responce{}, err
-	}
-
-	return Responce{
-		Message: fmt.Sprint("Your balance ", balance, "!"),
 	}, nil
 }
 
@@ -207,10 +175,7 @@ func Transfer(r *http.Request) (Responce, error) {
 	}
 
 	data.ID = uuid.New().String()
-	data.Timestamp = sql.NullString{
-		String: time.Now().Format("2006-01-02 15:04:05"),
-		Valid:  true,
-	}
+	data.Timestamp = time.Now().UTC().Format("2006-01-02 15:04:05")
 
 	user := schema.New(db)
 	err = user.InsertTransaction(context.Background(), data)
@@ -236,11 +201,7 @@ func GetIdByUserName(r *http.Request) (Responce, error) {
 		return Responce{}, err
 	}
 
-	h := sha256.New()
-	h.Write([]byte(data.Password))
-	hash := h.Sum(nil)
-
-	data.Password = hex.EncodeToString(hash)
+	data.Password = encryptPassword(data.Password)
 
 	user := schema.New(db)
 	res, err := user.GetAccountByUsername(context.Background(), data)
@@ -267,6 +228,8 @@ func Details(r *http.Request) (Responce, error) {
 		return Responce{}, err
 	}
 
+	data.Password = encryptPassword(data.Password)
+
 	user := schema.New(db)
 	res, err := user.GetAccountByUsername(context.Background(), data)
 	if err != nil {
@@ -275,13 +238,43 @@ func Details(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: fmt.Sprintf(
-			"User Details: ID: %s FirstName: %s LastName: %s Username: %s Email: %v Balance: %.2f",
+			"User Details:\n\tID: %s\n\tFirstName: %s\n\tLastName: %s\n\tUsername: %s\n\tEmail: %v\n\tBalance: %.2f",
 			res.ID,
 			res.FirstName,
 			res.LastName,
 			res.Username,
-			res.Email,
+			res.Email.String,
 			res.Balance,
 		),
 	}, nil
+}
+
+func CheckUser(r *http.Request) (Responce, error) {
+  data := r.PathValue("username")
+  if data == "" {
+    return Responce{}, fmt.Errorf("Username is not set!")
+  }
+
+	db, err := connect()
+	defer db.Close()
+	if err != nil {
+		return Responce{}, err
+	}
+
+	user := schema.New(db)
+	res, err := user.CheckUserExists(context.Background(), data)
+	if err != nil {
+		return Responce{}, err
+	}
+
+  return Responce{
+    Message: "User Found!",
+    UserId: res,
+  }, nil
+}
+
+func encryptPassword(password string) string {
+  h := sha256.New()
+  h.Write([]byte(password))
+  return hex.EncodeToString(h.Sum(nil))
 }

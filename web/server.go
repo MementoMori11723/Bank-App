@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 )
 
 var (
-	//go:embed pages/*.html
+	//go:embed pages/*
 	pages embed.FS
 
 	routes = map[string]http.HandlerFunc{
@@ -20,6 +21,10 @@ var (
 	dashboardRoutes = map[string]http.HandlerFunc{
 		"/": dashboard,
 	}
+
+  pagesDir = "pages/"
+  layout = pagesDir+"layout.html"
+  dashboardDir = "dashboard/"
 )
 
 func Start(port, server_port string) {
@@ -34,12 +39,13 @@ func Start(port, server_port string) {
 			Addr:    ":" + port,
 			Handler: mux,
 		}
-		fmt.Println("Starting server on http://localhost:" + port)
+		fmt.Println("Starting Web Ui server on http://localhost:" + port)
 		fmt.Println("Press enter to stop the server...")
 		err := client.ListenAndServe()
 		if err != nil {
 			slog.Error(err.Error())
-			return
+      fmt.Println("Error starting the server")
+      os.Exit(1)
 		}
 	}()
 	fmt.Scanln()

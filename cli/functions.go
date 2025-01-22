@@ -70,10 +70,7 @@ func fetch_responce(url string) {
 				history.Sender,
 				history.Receiver,
 				history.Amount,
-				map[bool]string{
-					true:  history.Timestamp.String,
-					false: "NULL",
-				}[history.Timestamp.Valid],
+				history.Timestamp,
 			)
 		}
 	}
@@ -94,6 +91,15 @@ func get_id(username, password string) (string, error) {
 	}
 
 	return res.UserId, nil
+}
+
+func check_user(username string) (string, error) {
+	check, err := get_response("checkUser/"+username, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return check.UserId, nil
 }
 
 func create() []byte {
@@ -201,9 +207,7 @@ func withdraw() []byte {
 
 func balance() []byte {
 	var userName, password string
-	type dataType struct {
-		ID string
-	}
+	type dataType schema.GetAccountByUsernameParams
 
 	keys := []string{"Username", "Password"}
 
@@ -212,13 +216,9 @@ func balance() []byte {
 		"Password": &password,
 	})
 
-	res, err := get_id(userName, password)
-	if err != nil {
-		errorFunc(err)
-	}
-
-	data, err := json.Marshal(dataType{
-		ID: res,
+	data, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: userName,
+		Password: password,
 	})
 	if err != nil {
 		errorFunc(err)
@@ -272,6 +272,15 @@ func transfer() []byte {
 	if err != nil {
 		errorFunc(err)
 	}
+
+  check, err := check_user(reciverUserName)
+	if err != nil {
+		errorFunc(err)
+	}
+
+  if check == "" {
+    errorFunc(fmt.Errorf("Receiver does not exist!"))
+  }
 
 	withdrawData, err := json.Marshal(schema.WithdrawParams{
 		Balance: amount,

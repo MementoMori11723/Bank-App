@@ -19,9 +19,9 @@ type Account struct {
 }
 
 type History struct {
-	ID        string         `json:"id"`
-	Sender    string         `json:"sender"`
-	Receiver  string         `json:"receiver"`
-	Amount    float64        `json:"amount"`
-	Timestamp sql.NullString `json:"timestamp"`
+	ID        string  `json:"id"`
+	Sender    string  `json:"sender"`
+	Receiver  string  `json:"receiver"`
+	Amount    float64 `json:"amount"`
+	Timestamp string  `json:"timestamp"`
 }

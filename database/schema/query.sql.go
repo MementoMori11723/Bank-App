@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const checkUserExists = `-- name: CheckUserExists :one
+SELECT id FROM account WHERE username = ?
+`
+
+func (q *Queries) CheckUserExists(ctx context.Context, username string) (string, error) {
+	row := q.db.QueryRowContext(ctx, checkUserExists, username)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
 const createAccount = `-- name: CreateAccount :exec
 INSERT INTO account (id, first_name, last_name, username, email, password, balance)
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -51,8 +62,8 @@ func (q *Queries) DeleteAccount(ctx context.Context, id string) error {
 const deleteHistory = `-- name: DeleteHistory :exec
 DELETE FROM history
 WHERE (sender = ? OR receiver = ?)
-  AND NOT EXISTS (SELECT 1 FROM account WHERE username = sender)
-  AND NOT EXISTS (SELECT 1 FROM account WHERE username = receiver)
+  AND NOT EXISTS (SELECT 1 FROM account WHERE username = history.sender)
+  AND NOT EXISTS (SELECT 1 FROM account WHERE username = history.receiver)
 `
 
 type DeleteHistoryParams struct {
@@ -116,19 +127,6 @@ func (q *Queries) GetAccountByUsername(ctx context.Context, arg GetAccountByUser
 	return i, err
 }
 
-const getBalance = `-- name: GetBalance :one
-SELECT balance
-FROM account
-WHERE id = ?
-`
-
-func (q *Queries) GetBalance(ctx context.Context, id string) (float64, error) {
-	row := q.db.QueryRowContext(ctx, getBalance, id)
-	var balance float64
-	err := row.Scan(&balance)
-	return balance, err
-}
-
 const getTransactions = `-- name: GetTransactions :many
 SELECT id, sender, receiver, amount, timestamp
 FROM history
@@ -176,11 +174,11 @@ VALUES (?, ?, ?, ?, ?)
 `
 
 type InsertTransactionParams struct {
-	ID        string         `json:"id"`
-	Sender    string         `json:"sender"`
-	Receiver  string         `json:"receiver"`
-	Amount    float64        `json:"amount"`
-	Timestamp sql.NullString `json:"timestamp"`
+	ID        string  `json:"id"`
+	Sender    string  `json:"sender"`
+	Receiver  string  `json:"receiver"`
+	Amount    float64 `json:"amount"`
+	Timestamp string  `json:"timestamp"`
 }
 
 func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionParams) error {

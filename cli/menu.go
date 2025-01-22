@@ -24,8 +24,8 @@ var (
 		"withdraw": subCommand{
 			"withdraw money", withdraw,
 		},
-		"balance": subCommand{
-			"check balance", balance,
+		"details": subCommand{
+			"check details", balance,
 		},
 		"transfer": subCommand{
 			"transfer money", transfer,
@@ -46,7 +46,7 @@ var (
 
 func inputFunc[T any](keys []string, m map[string]*T) {
 	for _, key := range keys {
-		fmt.Print(key, " : ")
+		fmt.Print(key, ": ")
 		fmt.Scanln(m[key])
 	}
 }
