@@ -14,20 +14,34 @@ var (
 
 	routes = map[string]http.HandlerFunc{
 		"/":      home,
+		"/login": login,
 		"/about": about,
 		"/error": errorPage,
+
+		"POST /login": postLogin,
 	}
 
 	dashboardRoutes = map[string]http.HandlerFunc{
 		"/": dashboard,
+
+		"/create":       create,
+		"/delete":       deleteFunc,
+		"/balance":      balance,
+		"/deposit":      deposit,
+		"/withdraw":     withdraw,
+		"/transfer":     transfer,
+		"/transactions": history,
 	}
 
-  pagesDir = "pages/"
-  layout = pagesDir+"layout.html"
-  dashboardDir = "dashboard/"
+	pagesDir     = "pages/"
+	layout       = pagesDir + "layout.html"
+	dashboardDir = pagesDir + "dashboard/"
+
+	baseUrl string
 )
 
 func Start(port, server_port string) {
+	baseUrl = "http://localhost:" + server_port
 	go func() {
 		mux := http.NewServeMux()
 		dashboard_mux := dashboardMux()
@@ -44,8 +58,8 @@ func Start(port, server_port string) {
 		err := client.ListenAndServe()
 		if err != nil {
 			slog.Error(err.Error())
-      fmt.Println("Error starting the server")
-      os.Exit(1)
+			fmt.Println("Error starting the server")
+			os.Exit(1)
 		}
 	}()
 	fmt.Scanln()

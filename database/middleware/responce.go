@@ -13,10 +13,18 @@ type ErrorResponse struct {
 
 func Responce(next func(*http.Request) (bank.Responce, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		slog.Info("Server - Request", r.Method, r.URL.Path)
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 
 		data, err := next(r)
 		if err != nil {

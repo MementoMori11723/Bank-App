@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ template "title" . }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"
+    integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+    crossorigin="anonymous"></script>
   <style>
     body {
       display: flex;
@@ -63,3 +66,23 @@
 </body>
 
 </html>
+
+{{ define "login" }}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let storage = localStorage.getItem("data");
+    let data = null;
+
+    try {
+      data = storage ? JSON.parse(storage) : null;
+    } catch (e) {
+      console.error("Failed to parse data from localStorage", e);
+      data = null;
+    }
+
+    if (!data || !data.userName || !data.password) {
+      window.location.href = "/login";
+    }
+  });
+</script>
+{{ end }}

@@ -24,7 +24,7 @@ func get_response(url string, reqBody []byte) (bank.Responce, error) {
 	}
 
 	req, err := http.NewRequest(
-		"POST", baseURL+url,
+		http.MethodPost, baseURL+url,
 		bytes.NewBuffer(reqBody),
 	)
 	if err != nil {
