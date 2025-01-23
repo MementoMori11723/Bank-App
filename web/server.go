@@ -13,18 +13,19 @@ var (
 	pages embed.FS
 
 	routes = map[string]http.HandlerFunc{
-		"/":      home,
-		"/login": login,
-		"/about": about,
-		"/error": errorPage,
+		"/":       home,
+		"/login":  login,
+		"/signup": signup,
+		"/about":  about,
+		"/error":  errorPage,
 
-		"POST /login": postLogin,
+		"POST /login":  postLogin,
+		"POST /signup": postSignup,
 	}
 
 	dashboardRoutes = map[string]http.HandlerFunc{
 		"/": dashboard,
 
-		"/create":       create,
 		"/delete":       deleteFunc,
 		"/balance":      balance,
 		"/deposit":      deposit,
@@ -47,7 +48,7 @@ func Start(port, server_port string) {
 		dashboard_mux := dashboardMux()
 		mux.Handle("/dashboard/", http.StripPrefix("/dashboard", dashboard_mux))
 		for route, handler := range routes {
-			mux.HandleFunc(route, handler)
+			mux.HandleFunc(route, Handler(handler))
 		}
 		client := http.Server{
 			Addr:    ":" + port,

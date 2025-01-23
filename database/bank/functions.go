@@ -45,6 +45,7 @@ func Create(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Account Created!",
+    UserId: data.ID,
 	}, nil
 }
 

@@ -1,0 +1,150 @@
+{{define "title"}}Create{{end}} {{define "content"}}
+<section class="bg-gray-50 py-20">
+  <div class="container mx-auto px-6">
+    <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+      <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Sign Up</h2>
+      <form id="signupForm" class="space-y-6">
+        <div id="errorMessage" class="text-red-500 text-sm text-center hidden"></div>
+
+        <div>
+          <label for="firstname" class="block text-sm font-medium text-gray-700">First Name</label>
+          <input type="text" id="firstname" name="firstname" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your first name" />
+        </div>
+
+        <div>
+          <label for="lastname" class="block text-sm font-medium text-gray-700">Last Name</label>
+          <input type="text" id="lastname" name="lastname" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your last name" />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="email" name="email" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your email" />
+        </div>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input type="text" id="username" name="username" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your username" />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="password" name="password" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your password" />
+        </div>
+
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required
+            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Confirm your password" />
+        </div>
+
+        <div>
+          <button type="submit"
+            class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Sign Up
+          </button>
+        </div>
+
+        <!-- Already have an account? -->
+        <div class="text-center text-sm text-gray-600">
+          Already have an account?
+          <a href="/login" class="text-blue-600 hover:text-blue-500">Login here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const signupForm = document.getElementById("signupForm");
+    const errorMessage = document.getElementById("errorMessage");
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const firstname = document.getElementById("firstname").value.trim();
+      const lastname = document.getElementById("lastname").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document
+        .getElementById("confirmPassword")
+        .value.trim();
+
+      // Basic validation
+      if (
+        !firstname ||
+        !lastname ||
+        !email ||
+        !username ||
+        !password ||
+        !confirmPassword
+      ) {
+        errorMessage.textContent = "Please fill in all fields.";
+        errorMessage.classList.remove("hidden");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match.";
+        errorMessage.classList.remove("hidden");
+        return;
+      }
+
+      console.log("Signup form submitted:", {
+        firstname,
+        lastname,
+        email,
+        username,
+        password,
+      });
+
+      try {
+        const response = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name: firstname,
+            last_name: lastname,
+            email: email,
+            username: username,
+            password: password,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Network response was not ok:", response.error);
+          console.error(response);
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+
+        if (!data.user_id) {
+          throw new Error("Invalid response: ID not found");
+        }
+
+        console.log("Signup successful:", data);
+        storeData(data.user_id, username, password)
+      } catch (error) {
+        console.error("Signup failed:", error);
+        errorMessage.textContent = "Signup failed. Please try again.";
+        errorMessage.classList.remove("hidden");
+      }
+    });
+  });
+</script>
+{{end}}

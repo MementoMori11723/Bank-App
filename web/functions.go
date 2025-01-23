@@ -1,8 +1,6 @@
 package web
 
 import (
-	"bank-app/database/schema"
-	"encoding/json"
 	"html/template"
 	"net/http"
 )
@@ -43,38 +41,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func postLogin(w http.ResponseWriter, r *http.Request) {
-  var data schema.GetAccountByUsernameParams
-  err := json.NewDecoder(r.Body).Decode(&data)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusBadRequest)
-    return
-  }
-
-	if data.Username == "" || data.Password == "" {
-		http.Error(w, "Username and password are required", http.StatusBadRequest)
-		return
-	}
-  
-  detail, err := json.Marshal(data)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-
-	res, err := get_data("/getId", detail)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = json.NewEncoder(w).Encode(res)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-}
-
 func errorPage(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	tmpl, err := template.ParseFS(pages, layout, pagesDir+"error.html")
@@ -98,8 +64,8 @@ func dashboard(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func create(w http.ResponseWriter, _ *http.Request) {
-	tmpl, err := template.ParseFS(pages, layout, dashboardDir+"create.html")
+func signup(w http.ResponseWriter, _ *http.Request) {
+	tmpl, err := template.ParseFS(pages, layout, pagesDir+"create.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

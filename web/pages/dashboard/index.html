@@ -4,21 +4,23 @@
   <div class="container mx-auto px-6">
     <h3 class="text-3xl font-bold mb-8 text-center">Dashboard Services</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Create Account -->
-      <a href="/dashboard/create">
-        <div
-          class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Create Account</h4>
-          <p class="text-gray-600">
-            Set up a new account to start managing your finances with us.
-          </p>
-        </div>
-      </a>
       <!-- Deposit -->
       <a href="/dashboard/deposit">
         <div
           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Deposit</h4>
+          <div class="flex items-center mb-4">
+            <span class="text-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wallet" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" />
+                <path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-blue-800">Deposit</h4>
+          </div>
           <p class="text-gray-600">
             Add funds to your existing account easily with our deposit feature.
           </p>
@@ -28,7 +30,19 @@
       <a href="/dashboard/withdraw">
         <div
           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Withdraw</h4>
+          <div class="flex items-center mb-4">
+            <span class="text-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cash" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 9m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
+                <path d="M14 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                <path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-blue-800">Withdraw</h4>
+          </div>
           <p class="text-gray-600">
             Withdraw your funds from your account whenever needed.
           </p>
@@ -38,7 +52,18 @@
       <a href="/dashboard/balance">
         <div
           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Balance</h4>
+          <div class="flex items-center mb-4">
+            <span class="text-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-dollar" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M16.7 8a3 3 0 0 0 -2.7 -2h-4a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6h-4a3 3 0 0 1 -2.7 -2" />
+                <path d="M12 3v3m0 12v3" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-blue-800">Balance</h4>
+          </div>
           <p class="text-gray-600">
             View your current account balance and keep track of your funds.
           </p>
@@ -48,7 +73,18 @@
       <a href="/dashboard/transactions">
         <div
           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Transactions</h4>
+          <div class="flex items-center mb-4">
+            <span class="text-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-receipt" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" />
+                <path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-blue-800">Transactions</h4>
+          </div>
           <p class="text-gray-600">
             Review your past transactions and track your financial history.
           </p>
@@ -58,7 +94,18 @@
       <a href="/dashboard/transfer">
         <div
           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Transfer</h4>
+          <div class="flex items-center mb-4">
+            <span class="text-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-transfer" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M20 10h-16l5.5 -6" />
+                <path d="M4 14h16l-5.5 6" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-blue-800">Transfer</h4>
+          </div>
           <p class="text-gray-600">
             Send money to other accounts securely and efficiently.
           </p>
@@ -67,10 +114,24 @@
       <!-- Delete -->
       <a href="/dashboard/delete">
         <div
-          class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <h4 class="text-xl font-bold mb-4 text-blue-800">Delete</h4>
-          <p class="text-gray-600">
-            Remove transactions or accounts as needed with ease.
+          class="bg-red-500 p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
+          <div class="flex items-center mb-4">
+            <span class="text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M4 7l16 0" />
+                <path d="M10 11l0 6" />
+                <path d="M14 11l0 6" />
+                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+              </svg>
+            </span>
+            <h4 class="text-xl font-bold ml-2 text-white">Delete</h4>
+          </div>
+          <p class="text-white">
+            Remove accounts as needed with ease.
           </p>
         </div>
       </a>

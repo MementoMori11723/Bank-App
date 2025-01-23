@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ template "title" . }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.4"
-    integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
-    crossorigin="anonymous"></script>
   <style>
     body {
       display: flex;
@@ -35,25 +32,154 @@
       border-radius: 0 0 50% 50%;
       transform: translateY(75%);
     }
+
+    #user-menu {
+      z-index: 100;
+    }
   </style>
+  <script>
+    function storeData(user_id, username, password) {
+      localStorage.setItem(
+        "data",
+        JSON.stringify({
+          userName: username,
+          password: password,
+          image: `https://api.dicebear.com/9.x/big-smile/svg?seed=${user_id}`,
+          id: user_id,
+        }),
+      );
+      window.location.href = "/dashboard";
+    }
+  </script>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
   <!-- Navbar -->
-  <header class="bg-blue-600 text-white sticky top-0">
+  <header class="bg-blue-600 text-white sticky top-0 z-40">
     <div class="container mx-auto flex justify-between items-center px-6 py-4">
       <a href="/" class="hover:text-blue-300">
         <h1 class="text-2xl font-bold">Simple Bank</h1>
       </a>
       <nav>
-        <ul class="flex space-x-6">
-          <li>
+        <ul class="flex space-x-6 items-center">
+          <li class="hidden md:block">
             <a href="/dashboard" class="hover:text-blue-300">Dashboard</a>
           </li>
-          <li><a href="/about" class="hover:text-blue-300">About</a></li>
-          <li><a href="/" class="hover:text-blue-300">Home</a></li>
+          <li class="hidden md:block">
+            <a href="/about" class="hover:text-blue-300">About</a>
+          </li>
+          <li class="hidden md:block">
+            <a href="/" class="hover:text-blue-300">Home</a>
+          </li>
+
+          <li class="relative ml-auto">
+            <div id="auth-section" class="flex items-center">
+              <button id="login-btn" class="hover:text-blue-300" onclick="checkLogin()">
+                Login
+              </button>
+
+              <div id="user-icon"
+                class="bg-white rounded-full w-10 h-10 flex items-center justify-center relative hidden">
+                <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full cursor-pointer"
+                  onclick="toggleMenu(event)" />
+
+                <div id="user-menu" class="hidden absolute top-12 right-0 w-48 bg-white rounded-lg shadow-lg z-50">
+                  <div class="absolute -top-2 right-3 w-4 h-4 bg-white transform rotate-45 z-[-1]"></div>
+
+                  <ul class="text-black text-center">
+                    <li class="md:hidden">
+                      <a href="/dashboard" class="block px-4 py-2 hover:bg-gray-100 rounded-lg">Dashboard</a>
+                    </li>
+                    <li class="md:hidden">
+                      <a href="/about" class="block px-4 py-2 hover:bg-gray-100 rounded-lg">About</a>
+                    </li>
+                    <li class="md:hidden">
+                      <a href="/" class="block px-4 py-2 hover:bg-gray-100 rounded-lg">Home</a>
+                    </li>
+
+                    <li>
+                      <button onclick="logout()"
+                        class="block w-full px-4 py-2 text-red-500 hover:bg-red-300 rounded-lg">
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </li>
         </ul>
       </nav>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          let storage = localStorage.getItem("data");
+          let data = null;
+
+          try {
+            data = storage ? JSON.parse(storage) : null;
+          } catch (e) {
+            console.error("Failed to parse data from localStorage", e);
+            data = null;
+          }
+
+          const loginBtn = document.getElementById("login-btn");
+          const userAvatar = document.getElementById("user-avatar");
+          const userIcon = document.getElementById("user-icon");
+
+          userAvatar.src =
+            data?.image ||
+            "https://api.dicebear.com/9.x/big-smile/svg?seed=test";
+
+          if (data && data.userName && data.password && data.image) {
+            loginBtn.classList.add("hidden");
+            userIcon.classList.remove("hidden");
+          } else {
+            loginBtn.classList.remove("hidden");
+            userIcon.classList.add("hidden");
+          }
+        });
+
+        function checkLogin() {
+          let storage = localStorage.getItem("data");
+          let data = null;
+
+          try {
+            data = storage ? JSON.parse(storage) : null;
+          } catch (e) {
+            console.error("Failed to parse data from localStorage", e);
+            data = null;
+          }
+
+          if (!data || !data.userName || !data.password) {
+            window.location.href = "/login";
+          } else {
+            const userMenu = document.getElementById("user-menu");
+            userMenu.classList.toggle("hidden");
+          }
+        }
+
+        function logout() {
+          localStorage.removeItem("data");
+          window.location.href = "/login";
+        }
+
+        function toggleMenu(event) {
+          event.stopPropagation();
+          const userMenu = document.getElementById("user-menu");
+          userMenu.classList.toggle("hidden");
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (event) => {
+          const userMenu = document.getElementById("user-menu");
+          const authSection = document.getElementById("auth-section");
+
+          if (!authSection.contains(event.target)) {
+            userMenu.classList.add("hidden");
+          }
+        });
+      </script>
     </div>
   </header>
   <main>{{ template "content" . }}</main>
@@ -66,23 +192,3 @@
 </body>
 
 </html>
-
-{{ define "login" }}
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    let storage = localStorage.getItem("data");
-    let data = null;
-
-    try {
-      data = storage ? JSON.parse(storage) : null;
-    } catch (e) {
-      console.error("Failed to parse data from localStorage", e);
-      data = null;
-    }
-
-    if (!data || !data.userName || !data.password) {
-      window.location.href = "/login";
-    }
-  });
-</script>
-{{ end }}

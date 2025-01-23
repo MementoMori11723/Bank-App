@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS account (
   first_name TEXT NOT NULL CHECK (LENGTH(first_name) > 0),
   last_name TEXT NOT NULL CHECK (LENGTH(last_name) > 0),
   username TEXT UNIQUE NOT NULL CHECK (LENGTH(username) >= 3),
-  email TEXT UNIQUE CHECK (email LIKE '%@%._%'),
+  email TEXT CHECK (email LIKE '%@%._%'),
   password TEXT NOT NULL CHECK (LENGTH(password) >= 8),
   balance REAL NOT NULL DEFAULT 0.0 CHECK (balance >= 0)
 ) STRICT;

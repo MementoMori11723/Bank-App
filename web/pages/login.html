@@ -28,6 +28,12 @@
             Login
           </button>
         </div>
+
+        <!-- Don't have an account? -->
+        <div class="text-center text-sm text-gray-600">
+          Don't have an account?
+          <a href="/signup" class="text-blue-600 hover:text-blue-500">Sign up here</a>
+        </div>
       </form>
     </div>
   </div>
@@ -70,17 +76,7 @@
         }
 
         console.log("Login successful:", data);
-
-        localStorage.setItem(
-          "data",
-          JSON.stringify({
-            userName: username,
-            password: password,
-            id: data.user_id,
-          }),
-        );
-
-        window.location.href = "/dashboard";
+        storeData(data.user_id, username, password);
       } catch (error) {
         console.error("Login failed:", error);
         errorMessage.textContent =
