@@ -96,6 +96,14 @@
         return;
       }
 
+      const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,20}$/; 
+
+      if (regex.test(password) === false) {
+        errorMessage.textContent = "Password must be between 8 and 20 characters and must contain at least one uppercase letter, one lowercase letter, and one number.";
+        errorMessage.classList.remove("hidden");
+        return;
+      }
+
       if (password !== confirmPassword) {
         errorMessage.textContent = "Passwords do not match.";
         errorMessage.classList.remove("hidden");

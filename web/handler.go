@@ -2,15 +2,45 @@ package web
 
 import (
 	"bank-app/database/bank"
+	"bank-app/database/middleware"
 	"bank-app/database/schema"
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 )
+
+type Data struct {
+	FirstName string  `json:"first_name,omitempty"`
+	LastName  string  `json:"last_name,omitempty"`
+	Username  string  `json:"username,omitempty"`
+	Password  string  `json:"password,omitempty"`
+	Email     string  `json:"email,omitempty"`
+	Amount    float64 `json:"amount,omitempty"`
+}
+
+func (d *Data) CheckString() (string, bool) {
+	data := map[string]string{
+		"first name": d.FirstName,
+		"last name":  d.LastName,
+		"username":   d.Username,
+		"password":   d.Password,
+		"email":      d.Email,
+	}
+
+	for k, v := range data {
+		if !middleware.CheckString(
+			strings.TrimSpace(v),
+		) {
+			return k + " is not valid\nContains special characters", false
+		}
+	}
+
+	return "", true
+}
 
 func Handler(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +83,7 @@ func get_data(url string, data []byte) (bank.Responce, error) {
 }
 
 func postLogin(w http.ResponseWriter, r *http.Request) {
-	var data schema.GetAccountByUsernameParams
+	var data Data
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		slog.Error(err.Error())
@@ -66,7 +96,15 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detail, err := json.Marshal(data)
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	detail, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -89,13 +127,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func postSignup(w http.ResponseWriter, r *http.Request) {
-	var data struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		Username  string `json:"username"`
-		Password  string `json:"password"`
-		Email     string `json:"email"`
-	}
+	var data Data
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -114,18 +146,24 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  detail, err := json.Marshal(schema.CreateAccountParams{
-    ID: "",
-    FirstName: data.FirstName,
-    LastName: data.LastName,
-    Username: data.Username,
-    Password: data.Password,
-    Email: sql.NullString{
-      String: data.Email,
-      Valid: data.Email != "",
-    },
-    Balance: 0,
-  })
+	if data.Email == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	detail, err := json.Marshal(schema.CreateAccountParams{
+		FirstName: data.FirstName,
+		LastName:  data.LastName,
+		Username:  data.Username,
+		Password:  data.Password,
+		Email:     data.Email,
+		Balance:   0,
+	})
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -139,7 +177,7 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  slog.Info("Web-UI - Response","%v", res)
+	slog.Info("Web-UI - Response", "%v", res)
 
 	err = json.NewEncoder(w).Encode(res)
 	if err != nil {

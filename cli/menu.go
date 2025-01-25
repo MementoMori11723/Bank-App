@@ -1,8 +1,14 @@
 package cli
 
 import (
+	"bank-app/database/middleware"
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
+	"syscall"
+
+	"golang.org/x/term"
 )
 
 type (
@@ -44,10 +50,46 @@ var (
 	}
 )
 
+func checkPassword(password string) bool {
+	if len(password) < 8 || len(password) > 20 {
+		return false
+	}
+	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
+	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
+	hasDigit := regexp.MustCompile(`\d`).MatchString(password)
+	return hasUpper && hasLower && hasDigit
+}
+
 func inputFunc[T any](keys []string, m map[string]*T) {
 	for _, key := range keys {
 		fmt.Print(key, ": ")
-		fmt.Scanln(m[key])
+		if str, ok := any(m[key]).(*string); ok {
+			var input string
+			if strings.Contains(key, "Password") {
+				i, err := term.ReadPassword(int(syscall.Stdin))
+				if err != nil {
+					errorFunc(err)
+				}
+				input = string(i)
+				if !checkPassword(input) {
+					errorFunc(fmt.Errorf("Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit and must be between 8-20 characters long!\n"))
+				}
+				fmt.Println()
+			} else {
+				_, err := fmt.Scanln(&input)
+				if err != nil {
+					errorFunc(err)
+				}
+			}
+
+			if !middleware.CheckString(input) {
+				errorFunc(fmt.Errorf("Invalid input!\nSpecial characters are not allowed!\n"))
+			} else {
+				*str = strings.TrimSpace(input)
+			}
+		} else {
+			fmt.Scanln(m[key])
+		}
 	}
 }
 

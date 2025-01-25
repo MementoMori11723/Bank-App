@@ -4,18 +4,15 @@
 
 package schema
 
-import (
-	"database/sql"
-)
-
 type Account struct {
-	ID        string         `json:"id"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	Username  string         `json:"username"`
-	Email     sql.NullString `json:"email"`
-	Password  string         `json:"password"`
-	Balance   float64        `json:"balance"`
+	ID        string  `json:"id"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Username  string  `json:"username"`
+	Email     string  `json:"email"`
+	Password  string  `json:"password"`
+	Balance   float64 `json:"balance"`
+	ImageUrl  string  `json:"image_url"`
 }
 
 type History struct {

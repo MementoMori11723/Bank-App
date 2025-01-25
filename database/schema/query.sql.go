@@ -7,7 +7,6 @@ package schema
 
 import (
 	"context"
-	"database/sql"
 )
 
 const checkUserExists = `-- name: CheckUserExists :one
@@ -27,13 +26,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateAccountParams struct {
-	ID        string         `json:"id"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	Username  string         `json:"username"`
-	Email     sql.NullString `json:"email"`
-	Password  string         `json:"password"`
-	Balance   float64        `json:"balance"`
+	ID        string  `json:"id"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Username  string  `json:"username"`
+	Email     string  `json:"email"`
+	Password  string  `json:"password"`
+	Balance   float64 `json:"balance"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
@@ -105,12 +104,12 @@ type GetAccountByUsernameParams struct {
 }
 
 type GetAccountByUsernameRow struct {
-	ID        string         `json:"id"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	Username  string         `json:"username"`
-	Email     sql.NullString `json:"email"`
-	Balance   float64        `json:"balance"`
+	ID        string  `json:"id"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Username  string  `json:"username"`
+	Email     string  `json:"email"`
+	Balance   float64 `json:"balance"`
 }
 
 func (q *Queries) GetAccountByUsername(ctx context.Context, arg GetAccountByUsernameParams) (GetAccountByUsernameRow, error) {

@@ -13,10 +13,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type DataStruct struct {
+	Accounts     schema.Account   `json:"accounts,omitempty"`
+	Transactions []schema.History `json:"transactions,omitempty"`
+}
+
 type Responce struct {
-	Message string           `json:"message"`
-	Data    []schema.History `json:"data,omitempty"`
-	UserId  string           `json:"user_id,omitempty"`
+	Message string     `json:"message"`
+	UserId  string     `json:"user_id,omitempty"`
+	Data    DataStruct `json:"data,omitempty"`
 }
 
 func Create(r *http.Request) (Responce, error) {
@@ -45,7 +50,7 @@ func Create(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Account Created!",
-    UserId: data.ID,
+		UserId:  data.ID,
 	}, nil
 }
 
@@ -157,7 +162,7 @@ func Transactions(r *http.Request) (Responce, error) {
 
 	return Responce{
 		Message: "Transactions History!",
-		Data:    history,
+		Data:    DataStruct{Transactions: history},
 	}, nil
 }
 
@@ -244,17 +249,17 @@ func Details(r *http.Request) (Responce, error) {
 			res.FirstName,
 			res.LastName,
 			res.Username,
-			res.Email.String,
+			res.Email,
 			res.Balance,
 		),
 	}, nil
 }
 
 func CheckUser(r *http.Request) (Responce, error) {
-  data := r.PathValue("username")
-  if data == "" {
-    return Responce{}, fmt.Errorf("Username is not set!")
-  }
+	data := r.PathValue("username")
+	if data == "" {
+		return Responce{}, fmt.Errorf("Username is not set!")
+	}
 
 	db, err := connect()
 	defer db.Close()
@@ -268,14 +273,14 @@ func CheckUser(r *http.Request) (Responce, error) {
 		return Responce{}, err
 	}
 
-  return Responce{
-    Message: "User Found!",
-    UserId: res,
-  }, nil
+	return Responce{
+		Message: "User Found!",
+		UserId:  res,
+	}, nil
 }
 
 func encryptPassword(password string) string {
-  h := sha256.New()
-  h.Write([]byte(password))
-  return hex.EncodeToString(h.Sum(nil))
+	h := sha256.New()
+	h.Write([]byte(password))
+	return hex.EncodeToString(h.Sum(nil))
 }

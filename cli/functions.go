@@ -4,7 +4,6 @@ import (
 	"bank-app/database/bank"
 	"bank-app/database/schema"
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -62,8 +61,8 @@ func fetch_responce(url string) {
 	}
 
 	fmt.Println(res.Message)
-	if res.Data != nil {
-		for i, history := range res.Data {
+	if res.Data.Transactions != nil {
+		for i, history := range res.Data.Transactions {
 			fmt.Printf(
 				"Entry %d: ID: %s Sender: %s Receiver: %s Amount: %.2f Timestamp: %s\n",
 				i+1, history.ID,
@@ -130,11 +129,8 @@ func create() []byte {
 		LastName:  lastName,
 		Username:  userName,
 		Password:  password,
-		Email: sql.NullString{
-			String: email,
-			Valid:  true,
-		},
-		Balance: balance,
+		Email:     email,
+		Balance:   balance,
 	})
 	if err != nil {
 		errorFunc(err)
@@ -171,6 +167,20 @@ func deposit() []byte {
 		errorFunc(err)
 	}
 
+	insert, err := json.Marshal(schema.InsertTransactionParams{
+		Sender:   userName,
+		Receiver: "credit",
+		Amount:   amount,
+	})
+	if err != nil {
+		errorFunc(err)
+	}
+
+	_, err = get_response("transfer", insert)
+	if err != nil {
+		errorFunc(err)
+	}
+
 	return data
 }
 
@@ -198,6 +208,20 @@ func withdraw() []byte {
 		Balance: amount,
 		ID:      res,
 	})
+	if err != nil {
+		errorFunc(err)
+	}
+
+	insert, err := json.Marshal(schema.InsertTransactionParams{
+		Sender:   userName,
+		Receiver: "debit",
+		Amount:   amount,
+	})
+	if err != nil {
+		errorFunc(err)
+	}
+
+	_, err = get_response("transfer", insert)
 	if err != nil {
 		errorFunc(err)
 	}
@@ -273,14 +297,14 @@ func transfer() []byte {
 		errorFunc(err)
 	}
 
-  check, err := check_user(reciverUserName)
+	check, err := check_user(reciverUserName)
 	if err != nil {
 		errorFunc(err)
 	}
 
-  if check == "" {
-    errorFunc(fmt.Errorf("Receiver does not exist!"))
-  }
+	if check == "" {
+		errorFunc(fmt.Errorf("Receiver does not exist!"))
+	}
 
 	withdrawData, err := json.Marshal(schema.WithdrawParams{
 		Balance: amount,
