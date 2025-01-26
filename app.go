@@ -10,24 +10,26 @@ import (
 )
 
 func main() {
-	serverPort, db_path, close_file := config.New()
-  defer close_file()
+	serverPort, db_path, server_url, close_file := config.New()
+	defer close_file()
 
-  web_ui := flag.Bool("web", false, "flag to run the web ui")
+	web_ui := flag.Bool("web", false, "flag to run the web ui")
 	port := flag.String("port", "8080", "port to run the web ui on")
-  server_port := flag.String("server-port", serverPort, "port to run the server on")
+	server_port := flag.String("server-port", serverPort, "port to run the server on")
 	flag.Parse()
 
 	fmt.Println("Welcome to Finova")
 
-	go func() {
-		database.Server(*server_port, db_path)
-	}()
+	if server_url == "" {
+		go func() {
+			database.Server(*server_port, db_path)
+		}()
+	}
 
 	if *web_ui {
-		web.Start(*port, *server_port)
+		web.Start(*port, *server_port, server_url)
 	} else {
-		cli.Menu(*server_port)
+		cli.Menu(*server_port, server_url)
 		fmt.Println("Goodbye")
 	}
 }

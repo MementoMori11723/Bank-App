@@ -107,12 +107,15 @@ func sub_menu(menu string) []byte {
 	return data
 }
 
-func Menu(port string) {
-	if port == "" {
-		fmt.Println("Port is not set!")
+func Menu(port, server_url string) {
+	if port == "" && server_url == "" {
+		fmt.Println("Port or Server url are is not set!")
 		return
 	}
 	baseURL = "http://localhost:" + port + "/"
+  if server_url != "" {
+    baseURL = server_url
+  }
 	var cmd string
 	for true {
 		fmt.Print("Enter command: ")

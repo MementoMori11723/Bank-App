@@ -43,11 +43,19 @@ var (
 	layout       = pagesDir + "layout.html"
 	dashboardDir = pagesDir + "dashboard/"
 
-	baseUrl string
+	baseURL string
 )
 
-func Start(port, server_port string) {
-	baseUrl = "http://localhost:" + server_port
+func Start(port, server_port, server_url string) {
+	if server_port == "" && server_url == "" {
+		fmt.Println("Port or Server url are is not set!")
+		return
+	}
+  baseURL = "http://localhost:" + server_port + "/"
+	if server_url != "" {
+    baseURL = server_url
+    slog.Info("Server url is set to " + server_url)
+	}
 	go func() {
 		mux := http.NewServeMux()
 		dashboard_mux := dashboardMux()

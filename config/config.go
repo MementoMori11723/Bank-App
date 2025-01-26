@@ -16,17 +16,18 @@ type config struct {
 		Port string `json:"port"`
 	} `json:"server"`
 	Log string `json:"log"`
+	ServerUrl string `json:"server_url"`
 }
 
 var (
-  //go:embed config.json 
-  conf []byte
-  file *os.File 
+	//go:embed config.json
+	conf []byte
+	file *os.File
 )
 
-func New() (string, string, func()) {
+func New() (string, string, string, func()) {
 	var data config
-  err := json.NewDecoder(bytes.NewReader(conf)).Decode(&data)
+	err := json.NewDecoder(bytes.NewReader(conf)).Decode(&data)
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -36,13 +37,13 @@ func New() (string, string, func()) {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-	
-  cleanup := func () {
-    file.Close()
-  }
+
+	cleanup := func() {
+		file.Close()
+	}
 
 	logger := slog.New(slog.NewJSONHandler(file, nil))
 	slog.SetDefault(logger)
 
-	return data.Server.Port, data.Database.Path, cleanup
+	return data.Server.Port, data.Database.Path, data.ServerUrl, cleanup
 }

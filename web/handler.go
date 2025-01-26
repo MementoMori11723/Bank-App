@@ -54,7 +54,7 @@ func get_data(url string, data []byte) (bank.Responce, error) {
 		Timeout: time.Second * 30,
 	}
 
-	req, err := http.NewRequest(http.MethodPost, baseUrl+url, bytes.NewBuffer(data))
+	req, err := http.NewRequest(http.MethodPost, baseURL+url, bytes.NewBuffer(data))
 	if err != nil {
 		return bank.Responce{}, err
 	}
