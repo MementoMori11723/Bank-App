@@ -182,7 +182,7 @@ func Transfer(r *http.Request) (Responce, error) {
 	}
 
 	data.ID = uuid.New().String()
-	data.Timestamp = time.Now().UTC().Format("2006-01-02 15:04:05")
+  data.Timestamp = fmt.Sprintf("%s", time.Now().Format("02 Jan 2006 - 03:04:05 PM"))
 
 	user := schema.New(db)
 	err = user.InsertTransaction(context.Background(), data)

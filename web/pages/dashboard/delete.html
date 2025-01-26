@@ -4,6 +4,7 @@
   <div class="container mx-auto text-center px-6">
     <h3 class="text-3xl font-bold mb-8">Confirm Deletion</h3>
     <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+      <div id="message" class="hidden mb-4 p-4 border rounded-lg text-sm"></div>
       <p class="text-gray-600 mb-6">
         Are you sure you want to delete your account?
       </p>
@@ -15,7 +16,6 @@
           No
         </button>
       </div>
-      <div id="message" class="mt-4 text-sm"></div>
     </div>
   </div>
 </section>
@@ -44,16 +44,22 @@
       }
 
       messageDiv.textContent = "Account deleted successfully!";
-      messageDiv.style.color = "green";
+      messageDiv.classList.add("bg-green-50");
+      messageDiv.classList.add("border-green-200");
+      messageDiv.classList.add("text-green-600");
+      messageDiv.classList.remove("hidden");
 
       localStorage.removeItem("data");
 
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/signup";
       }, 1000);
     } catch (error) {
       messageDiv.textContent = "Error: " + error.message;
-      messageDiv.style.color = "red";
+      messageDiv.classList.add("bg-red-50");
+      messageDiv.classList.add("border-red-200");
+      messageDiv.classList.add("text-red-600");
+      messageDiv.classList.remove("hidden");
 
       setTimeout(() => {
         messageDiv.textContent = "";

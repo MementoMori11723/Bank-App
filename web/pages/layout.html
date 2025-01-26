@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon"
+    href="data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20%20width%3D%2224%22%20%20height%3D%2224%22%20%20viewBox%3D%220%200%2024%2024%22%20%20fill%3D%22none%22%20%20stroke%3D%22currentColor%22%20%20stroke-width%3D%222%22%20%20stroke-linecap%3D%22round%22%20%20stroke-linejoin%3D%22round%22%20%20class%3D%22icon%20icon-tabler%20icons-tabler-outline%20icon-tabler-building-bank%22%3E%3Cpath%20stroke%3D%22none%22%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M3%2021l18%200%22%20%2F%3E%3Cpath%20d%3D%22M3%2010l18%200%22%20%2F%3E%3Cpath%20d%3D%22M5%206l7%20-3l7%203%22%20%2F%3E%3Cpath%20d%3D%22M4%2010l0%2011%22%20%2F%3E%3Cpath%20d%3D%22M20%2010l0%2011%22%20%2F%3E%3Cpath%20d%3D%22M8%2014l0%203%22%20%2F%3E%3Cpath%20d%3D%22M12%2014l0%203%22%20%2F%3E%3Cpath%20d%3D%22M16%2014l0%203%22%20%2F%3E%3C%2Fsvg%3E" />
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
   <title>{{ template "title" . }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -57,24 +60,29 @@
   <!-- Navbar -->
   <header class="bg-blue-600 text-white sticky top-0 z-40">
     <div class="container mx-auto flex justify-between items-center px-6 py-4">
-      <a href="/" class="hover:text-black">
-        <h1 class="text-2xl font-bold">Finova</h1>
+      <a href="/" class="hover:text-blue-600 hover:bg-white pr-5 pl-5 p-1 rounded-full">
+        <h1 class="text-2xl font-bold flex justify-center align-center">
+          <img
+            src="data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20%20width%3D%2224%22%20%20height%3D%2224%22%20%20viewBox%3D%220%200%2024%2024%22%20%20fill%3D%22none%22%20%20stroke%3D%22currentColor%22%20%20stroke-width%3D%222%22%20%20stroke-linecap%3D%22round%22%20%20stroke-linejoin%3D%22round%22%20%20class%3D%22icon%20icon-tabler%20icons-tabler-outline%20icon-tabler-building-bank%22%3E%3Cpath%20stroke%3D%22none%22%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M3%2021l18%200%22%20%2F%3E%3Cpath%20d%3D%22M3%2010l18%200%22%20%2F%3E%3Cpath%20d%3D%22M5%206l7%20-3l7%203%22%20%2F%3E%3Cpath%20d%3D%22M4%2010l0%2011%22%20%2F%3E%3Cpath%20d%3D%22M20%2010l0%2011%22%20%2F%3E%3Cpath%20d%3D%22M8%2014l0%203%22%20%2F%3E%3Cpath%20d%3D%22M12%2014l0%203%22%20%2F%3E%3Cpath%20d%3D%22M16%2014l0%203%22%20%2F%3E%3C%2Fsvg%3E"
+            alt="icon" class="mr-2" />Finova
+        </h1>
       </a>
       <nav>
         <ul class="flex space-x-6 items-center">
           <li class="hidden md:block">
-            <a href="/dashboard" class="hover:text-black hover:bg-white p-2">Dashboard</a>
+            <a href="/dashboard" class="font-semibold hover:text-blue-600 hover:bg-white p-2 rounded-md">Dashboard</a>
           </li>
           <li class="hidden md:block">
-            <a href="/about" class="hover:text-black hover:bg-white p-2">About</a>
+            <a href="/about" class="font-semibold hover:text-blue-600 hover:bg-white p-2 rounded-md">About</a>
           </li>
           <li class="hidden md:block">
-            <a href="/" class="hover:text-black hover:bg-white p-2">Home</a>
+            <a href="/" class="font-semibold hover:text-blue-600 hover:bg-white p-2 rounded-md">Home</a>
           </li>
 
           <li class="relative ml-auto">
             <div id="auth-section" class="flex items-center">
-              <button id="login-btn" class="hover:text-black hover:bg-white p-2" onclick="checkLogin()">
+              <button id="login-btn" class="font-semibold hover:text-blue-600 hover:bg-white p-2 rounded-md"
+                onclick="checkLogin()">
                 Login
               </button>
 
@@ -84,7 +92,7 @@
                   onclick="toggleMenu(event)" />
 
                 <div id="user-menu" class="hidden absolute top-12 right-0 w-48 bg-white rounded-lg shadow-lg z-50">
-                  <div class="absolute -top-2 right-3 w-4 h-4 bg-white transform rotate-45 z-[-1]"></div>
+                  <div class="absolute -top-2 right-3 w-5 h-5 bg-white transform rotate-45 z-[-1]"></div>
 
                   <ul class="text-black text-center">
                     <li class="md:hidden">
@@ -99,7 +107,7 @@
 
                     <li>
                       <button onclick="logout()"
-                        class="block w-full px-4 py-2 text-red-500 hover:bg-red-300 rounded-lg">
+                        class="block w-full px-4 py-2 text-red-500 font-bold hover:bg-red-500 hover:text-white rounded-lg">
                         Logout
                       </button>
                     </li>
