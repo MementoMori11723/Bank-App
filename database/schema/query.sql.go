@@ -21,8 +21,8 @@ func (q *Queries) CheckUserExists(ctx context.Context, username string) (string,
 }
 
 const createAccount = `-- name: CreateAccount :exec
-INSERT INTO account (id, first_name, last_name, username, email, password, balance)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO account (id, first_name, last_name, username, email, password, balance, image_url)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateAccountParams struct {
@@ -33,6 +33,7 @@ type CreateAccountParams struct {
 	Email     string  `json:"email"`
 	Password  string  `json:"password"`
 	Balance   float64 `json:"balance"`
+	ImageUrl  string  `json:"image_url"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
@@ -44,6 +45,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) er
 		arg.Email,
 		arg.Password,
 		arg.Balance,
+		arg.ImageUrl,
 	)
 	return err
 }

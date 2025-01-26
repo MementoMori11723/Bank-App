@@ -177,7 +177,472 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Info("Web-UI - Response", "%v", res)
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postDetails(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	slog.Info("Web-UI - data", "%v", data)
+
+	if data.Username == "" || data.Password == "" {
+		slog.Error("Username and password are required")
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		slog.Error(str)
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	detail, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := get_data("/details", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postDeposit(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if data.Username == "" || data.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if data.Amount <= 0 {
+		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	id_details, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id_res, err := get_data("/getId", id_details)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	detail, err := json.Marshal(schema.DepositParams{
+		ID:      id_res.UserId,
+		Balance: data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := get_data("/deposit", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	insert, err := json.Marshal(schema.InsertTransactionParams{
+		Sender:   data.Username,
+		Receiver: "credit",
+		Amount:   data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = get_data("/transfer", insert)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postWithdraw(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if data.Username == "" || data.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if data.Amount <= 0 {
+		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	id_details, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id_res, err := get_data("/getId", id_details)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	detail, err := json.Marshal(schema.WithdrawParams{
+		ID:      id_res.UserId,
+		Balance: data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := get_data("/withdraw", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	insert, err := json.Marshal(schema.InsertTransactionParams{
+		Sender:   data.Username,
+		Receiver: "debit",
+		Amount:   data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = get_data("/transfer", insert)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postTransfer(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	reciver := r.PathValue("receiver")
+
+	if reciver == "" {
+		http.Error(w, "Receiver is required", http.StatusBadRequest)
+		return
+	}
+
+	if data.Username == "" || data.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if data.Amount <= 0 {
+		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	check_user, err := get_data("/checkUser/"+reciver, nil)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if check_user.UserId == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(struct {
+			Error string `json:"error"`
+		}{
+			Error: "Receiver not found",
+		})
+		return
+	}
+
+	id_details, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id_res, err := get_data("/getId", id_details)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	detail, err := json.Marshal(schema.WithdrawParams{
+		ID:      id_res.UserId,
+		Balance: data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = get_data("/withdraw", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	deposit, err := json.Marshal(schema.DepositParams{
+		Username: reciver,
+		Balance:  data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = get_data("/deposit", deposit)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	insert, err := json.Marshal(schema.InsertTransactionParams{
+		Sender:   data.Username,
+		Receiver: reciver,
+		Amount:   data.Amount,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+  res, err := get_data("/transfer", insert)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postHistory(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if data.Username == "" || data.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	id_details, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = get_data("/getId", id_details)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	detail, err := json.Marshal(schema.GetTransactionsParams{
+		Sender:   data.Username,
+		Receiver: data.Username,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := get_data("/transactions", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postDelete(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if data.Username == "" || data.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	if str, ok := data.CheckString(); !ok {
+		http.Error(w, str, http.StatusBadRequest)
+		return
+	}
+
+	id_details, err := json.Marshal(schema.GetAccountByUsernameParams{
+		Username: data.Username,
+		Password: data.Password,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id_res, err := get_data("/getId", id_details)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	detail, err := json.Marshal(struct {
+		ID       string `json:"id"`
+		Username string `json:"username"`
+	}{
+		ID:       id_res.UserId,
+		Username: data.Username,
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := get_data("/delete", detail)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	err = json.NewEncoder(w).Encode(res)
 	if err != nil {

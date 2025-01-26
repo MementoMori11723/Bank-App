@@ -119,6 +119,7 @@
       });
 
       try {
+        imageUrl = "https://api.dicebear.com/9.x/big-smile/svg?seed=" + username;
         const response = await fetch("/signup", {
           method: "POST",
           headers: {
@@ -130,6 +131,7 @@
             email: email,
             username: username,
             password: password,
+            image_url: imageUrl,
           }),
         });
 
@@ -146,7 +148,7 @@
         }
 
         console.log("Signup successful:", data);
-        storeData(data.user_id, username, password)
+        storeData(data.user_id, username, password, imageUrl);
       } catch (error) {
         console.error("Signup failed:", error);
         errorMessage.textContent = "Signup failed. Please try again.";

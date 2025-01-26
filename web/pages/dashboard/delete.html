@@ -1,22 +1,68 @@
 {{define "title"}}Delete{{end}} {{define "content"}}
-<!-- Services Section -->
-<section id="services" class="py-16 bg-gray-50">
+<!-- Delete Confirmation Form -->
+<section id="delete-confirmation" class="py-16 bg-gray-50">
   <div class="container mx-auto text-center px-6">
-    <h3 class="text-3xl font-bold mb-8">Our Services</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Savings Accounts</h4>
-        <p class="text-gray-600">
-          Grow your wealth with high-interest savings accounts.
-        </p>
+    <h3 class="text-3xl font-bold mb-8">Confirm Deletion</h3>
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+      <p class="text-gray-600 mb-6">
+        Are you sure you want to delete your account?
+      </p>
+      <div class="flex justify-center space-x-4">
+        <button id="yes-btn" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600">
+          Yes
+        </button>
+        <button id="no-btn" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">
+          No
+        </button>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Secure Banking</h4>
-        <p class="text-gray-600">
-          Your security is our priority with state-of-the-art technology.
-        </p>
-      </div>
+      <div id="message" class="mt-4 text-sm"></div>
     </div>
   </div>
 </section>
+
+<script>
+  const yesBtn = document.getElementById("yes-btn");
+  const noBtn = document.getElementById("no-btn");
+  const messageDiv = document.getElementById("message");
+
+  yesBtn.addEventListener("click", async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("data"));
+      const response = await fetch("/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userData.userName,
+          password: userData.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      messageDiv.textContent = "Account deleted successfully!";
+      messageDiv.style.color = "green";
+
+      localStorage.removeItem("data");
+
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 1000);
+    } catch (error) {
+      messageDiv.textContent = "Error: " + error.message;
+      messageDiv.style.color = "red";
+
+      setTimeout(() => {
+        messageDiv.textContent = "";
+      }, 3000);
+    }
+  });
+
+  noBtn.addEventListener("click", () => {
+    window.location.href = "/dashboard";
+  });
+</script>
 {{end}}

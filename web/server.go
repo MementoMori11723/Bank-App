@@ -19,15 +19,20 @@ var (
 		"/about":  about,
 		"/error":  errorPage,
 
-		"POST /login":  postLogin,
-		"POST /signup": postSignup,
+		"POST /login":               postLogin,
+		"POST /signup":              postSignup,
+		"POST /details":             postDetails,
+		"POST /deposit":             postDeposit,
+		"POST /withdraw":            postWithdraw,
+		"POST /transfer/{receiver}": postTransfer,
+		"POST /history":             postHistory,
+		"POST /delete":              postDelete,
 	}
 
 	dashboardRoutes = map[string]http.HandlerFunc{
 		"/": dashboard,
 
 		"/delete":       deleteFunc,
-		"/balance":      balance,
 		"/deposit":      deposit,
 		"/withdraw":     withdraw,
 		"/transfer":     transfer,

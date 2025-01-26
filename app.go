@@ -18,7 +18,7 @@ func main() {
   server_port := flag.String("server-port", serverPort, "port to run the server on")
 	flag.Parse()
 
-	fmt.Println("Welcome to the bank")
+	fmt.Println("Welcome to Finova")
 
 	go func() {
 		database.Server(*server_port, db_path)

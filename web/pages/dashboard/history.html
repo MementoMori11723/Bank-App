@@ -1,22 +1,106 @@
 {{define "title"}}History{{end}} {{define "content"}}
 <!-- Services Section -->
-<section id="services" class="py-16 bg-gray-50">
-  <div class="container mx-auto text-center px-6">
-    <h3 class="text-3xl font-bold mb-8">Our Services</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Savings Accounts</h4>
-        <p class="text-gray-600">
-          Grow your wealth with high-interest savings accounts.
-        </p>
-      </div>
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Secure Banking</h4>
-        <p class="text-gray-600">
-          Your security is our priority with state-of-the-art technology.
-        </p>
-      </div>
+<section id="services" class="py-16 bg-gray-50 px-4 sm:px-6 lg:px-8">
+  <!-- Transaction History Section -->
+  <div class="mt-12 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6 text-center">Transaction History</h1>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white w-1/4 mx-auto overflow-x-auto">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b text-center">Date</th>
+            <th class="py-2 px-4 border-b text-center">Sender</th>
+            <th class="py-2 px-4 border-b text-center">Receiver</th>
+            <th class="py-2 px-4 border-b text-center">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTableBody">
+          <!-- Rows will be dynamically inserted here -->
+        </tbody>
+      </table>
     </div>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userData = JSON.parse(localStorage.getItem("data"));
+
+      if (!userData || !userData.userName || !userData.password) {
+        console.error("No user data found in localStorage.");
+        return;
+      }
+
+      fetch("/history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userData.userName,
+          password: userData.password,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch transaction history.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            populateTransactionTable(data.data.transactions);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching transaction history:", error);
+        });
+    });
+
+    function populateTransactionTable(transactions) {
+      const tableBody = document.getElementById("transactionTableBody");
+
+      tableBody.innerHTML = "";
+
+      transactions.forEach((transaction) => {
+        const row = document.createElement("tr");
+        row.className = "hover:bg-gray-50";
+
+        const dateCell = document.createElement("td");
+        dateCell.className = "py-2 px-4 border-b text-center align-middle";
+        dateCell.textContent = new Date(transaction.timestamp)
+          .toLocaleString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+          .replace(",", " -");
+        row.appendChild(dateCell);
+
+        const senderCell = document.createElement("td");
+        senderCell.className = "py-2 px-4 border-b text-center align-middle";
+        senderCell.textContent = transaction.sender;
+        row.appendChild(senderCell);
+
+        const receiverCell = document.createElement("td");
+        receiverCell.className = "py-2 px-4 border-b text-center align-middle";
+        receiverCell.textContent = transaction.receiver;
+        row.appendChild(receiverCell);
+
+        const amountCell = document.createElement("td");
+        amountCell.className = "py-2 px-4 border-b text-center align-middle";
+        amountCell.textContent = `${new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "INR",
+        }).format(transaction.amount)}`;
+        row.appendChild(amountCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
 </section>
 {{end}}

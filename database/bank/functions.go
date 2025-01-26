@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -75,7 +76,7 @@ func Deposit(r *http.Request) (Responce, error) {
 	}
 
 	return Responce{
-		Message: "Added Money!",
+		Message: fmt.Sprintf("Deposited %s! ", formatINR(data.Balance)),
 	}, nil
 }
 
@@ -100,7 +101,7 @@ func Withdraw(r *http.Request) (Responce, error) {
 	}
 
 	return Responce{
-		Message: "Took Money!",
+		Message: fmt.Sprintf("Withdrawn %s! ", formatINR(data.Balance)),
 	}, nil
 }
 
@@ -252,6 +253,15 @@ func Details(r *http.Request) (Responce, error) {
 			res.Email,
 			res.Balance,
 		),
+		UserId: res.ID,
+		Data: DataStruct{Accounts: schema.Account{
+			ID:        res.ID,
+			FirstName: res.FirstName,
+			LastName:  res.LastName,
+			Username:  res.Username,
+			Email:     res.Email,
+			Balance:   res.Balance,
+		}},
 	}, nil
 }
 
@@ -283,4 +293,19 @@ func encryptPassword(password string) string {
 	h := sha256.New()
 	h.Write([]byte(password))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func formatINR(amount float64) string {
+	formatted := fmt.Sprintf("%.2f", amount)
+
+	parts := strings.Split(formatted, ".")
+	integerPart := parts[0]
+	decimalPart := parts[1]
+
+	n := len(integerPart)
+	for i := n - 3; i > 0; i -= 3 {
+		integerPart = integerPart[:i] + "," + integerPart[i:]
+	}
+
+	return fmt.Sprintf("₹%s.%s", integerPart, decimalPart)
 }

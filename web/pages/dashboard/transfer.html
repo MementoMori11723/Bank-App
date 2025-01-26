@@ -1,22 +1,130 @@
 {{define "title"}}Transfer{{end}} {{define "content"}}
 <!-- Services Section -->
-<section id="services" class="py-16 bg-gray-50">
-  <div class="container mx-auto text-center px-6">
-    <h3 class="text-3xl font-bold mb-8">Our Services</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Savings Accounts</h4>
-        <p class="text-gray-600">
-          Grow your wealth with high-interest savings accounts.
-        </p>
+<section id="services" class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Form Section -->
+    <div class="mt-12 bg-white p-6 sm:p-8 rounded-lg shadow-md max-w-md mx-auto">
+      <h4 class="text-2xl font-bold mb-6 text-center">Transfer Money</h4>
+
+      <!-- Error Message Div -->
+      <div id="errorMessage"
+        class="hidden mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm transition-opacity transition-visibility duration-300 ease-out opacity-100 visible">
+        <!-- Error message will be dynamically inserted here -->
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Secure Banking</h4>
-        <p class="text-gray-600">
-          Your security is our priority with state-of-the-art technology.
-        </p>
+
+      <!-- Success Message Div -->
+      <div id="successMessage"
+        class="hidden mb-4 p-4 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm">
+        <!-- Success message will be dynamically inserted here -->
       </div>
+
+      <form id="transferForm" action="/deposit" method="POST">
+        <!-- Receiver's Username Input -->
+        <div class="mb-4">
+          <label for="receiverUsername" class="block text-gray-700 text-sm font-bold mb-2">Receiver's Username</label>
+          <input type="text" id="receiverUsername" name="receiverUsername"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter receiver's username" required />
+        </div>
+
+        <!-- Amount Input -->
+        <div class="mb-4">
+          <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+          <input type="number" id="amount" name="amount"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount" required />
+        </div>
+
+        <!-- Hidden Inputs for Sender's Username and Password -->
+        <input type="hidden" id="username" name="username" value="" />
+        <input type="hidden" id="password" name="password" value="" />
+
+        <!-- Submit Button -->
+        <button type="submit"
+          class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Transfer Money
+        </button>
+      </form>
     </div>
   </div>
+  <script>
+    const userData = JSON.parse(localStorage.getItem("data"));
+
+    if (userData) {
+      document.getElementById("username").value = userData.userName || "";
+      document.getElementById("password").value = userData.password || "";
+    } else {
+      console.error("No user data found in localStorage.");
+      showError("No user data found. Please log in again.");
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById("errorMessage");
+      errorDiv.textContent =
+        message || "Something went wrong. Please try again.";
+      errorDiv.classList.remove("hidden");
+      setTimeout(() => {
+        document.getElementById("errorMessage").classList.add("hidden");
+      }, 3700);
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById("successMessage");
+      successDiv.textContent =
+        message + " Redirecting to dashboard..." ||
+        "Success! Redirecting to dashboard...";
+      successDiv.classList.remove("hidden");
+
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 3000);
+    }
+
+    document.getElementById("transferForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Get form data
+      const formData = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        amount: parseFloat(document.getElementById("amount").value),
+      };
+
+      const receiverUsername =
+        document.getElementById("receiverUsername").value;
+      // Send the data to the server
+      fetch("/transfer/" + receiverUsername, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            try {
+              res.json().then((data) => {
+                showError(data.error);
+              });
+            } catch (e) {
+              throw new Error("Something went wrong.");
+            }
+          }
+        })
+        .then((data) => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            showSuccess(data.message);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          showError("Something went wrong. Please try again.");
+        });
+    });
+  </script>
 </section>
 {{end}}

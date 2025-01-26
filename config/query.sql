@@ -1,6 +1,6 @@
 -- name: CreateAccount :exec
-INSERT INTO account (id, first_name, last_name, username, email, password, balance)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO account (id, first_name, last_name, username, email, password, balance, image_url)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: Deposit :exec
 UPDATE account

@@ -53,7 +53,10 @@ func errorPage(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func dashboard(w http.ResponseWriter, _ *http.Request) {
+func dashboard(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.Redirect(w, r, "/error", http.StatusFound)
+	}
 	tmpl, err := template.ParseFS(pages, layout, dashboardDir+"index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -77,17 +80,6 @@ func signup(w http.ResponseWriter, _ *http.Request) {
 
 func deleteFunc(w http.ResponseWriter, _ *http.Request) {
 	tmpl, err := template.ParseFS(pages, layout, dashboardDir+"delete.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if err := tmpl.Execute(w, nil); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func balance(w http.ResponseWriter, _ *http.Request) {
-	tmpl, err := template.ParseFS(pages, layout, dashboardDir+"balance.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

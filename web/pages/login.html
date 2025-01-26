@@ -75,8 +75,12 @@
           throw new Error("Invalid response: ID not found");
         }
 
+        if (!data.image_url) {
+          data.image_url = "https://api.dicebear.com/9.x/big-smile/svg?seed=" + username;
+        }
+
         console.log("Login successful:", data);
-        storeData(data.user_id, username, password);
+        storeData(data.user_id, username, password, data.image_url);
       } catch (error) {
         console.error("Login failed:", error);
         errorMessage.textContent =

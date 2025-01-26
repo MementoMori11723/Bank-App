@@ -1,5 +1,49 @@
 {{define "title"}}Dashboard{{end}} {{define "content"}}
 <!-- Dashboard Section -->
+<!-- Dashboard User Details Section -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto flex flex-col md:flex-row items-center">
+      <div class="w-32 h-32 rounded-full overflow-hidden mb-8 md:mb-0 md:mr-8 relative group">
+        <img src="" alt="User Image" id="user_image" class="w-full h-full object-cover" />
+      </div>
+
+      <div class="flex-1 w-full">
+        <div class="mb-6">
+          <h3 class="text-lg md:text-xl text-gray-500 font-medium">
+            Account Balance:
+          </h3>
+          <p class="text-3xl md:text-5xl font-bold text-green-700" id="balance"></p>
+        </div>
+
+        <div class="space-y-2 text-gray-700">
+          <div class="flex flex-col sm:flex-row sm:justify-between">
+            <span class="font-bold">Account ID:</span>
+            <span id="id" class="sm:text-right text-black"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-bold">First Name:</span>
+            <span id="firstname"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-bold">Last Name:</span>
+            <span id="lastname"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-bold">Username:</span>
+            <span id="username"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-bold">Email:</span>
+            <span id="email"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Services Section -->
 <section id="dashboard" class="py-16 bg-gray-50">
   <div class="container mx-auto px-6">
     <h3 class="text-3xl font-bold mb-8 text-center">Dashboard Services</h3>
@@ -26,6 +70,7 @@
           </p>
         </div>
       </a>
+
       <!-- Withdraw -->
       <a href="/dashboard/withdraw">
         <div
@@ -48,27 +93,7 @@
           </p>
         </div>
       </a>
-      <!-- Balance -->
-      <a href="/dashboard/balance">
-        <div
-          class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition transform hover:scale-105">
-          <div class="flex items-center mb-4">
-            <span class="text-blue-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-dollar" width="24"
-                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M16.7 8a3 3 0 0 0 -2.7 -2h-4a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6h-4a3 3 0 0 1 -2.7 -2" />
-                <path d="M12 3v3m0 12v3" />
-              </svg>
-            </span>
-            <h4 class="text-xl font-bold ml-2 text-blue-800">Balance</h4>
-          </div>
-          <p class="text-gray-600">
-            View your current account balance and keep track of your funds.
-          </p>
-        </div>
-      </a>
+
       <!-- Transactions -->
       <a href="/dashboard/transactions">
         <div
@@ -90,6 +115,7 @@
           </p>
         </div>
       </a>
+
       <!-- Transfer -->
       <a href="/dashboard/transfer">
         <div
@@ -111,6 +137,7 @@
           </p>
         </div>
       </a>
+
       <!-- Delete -->
       <a href="/dashboard/delete">
         <div
@@ -130,12 +157,61 @@
             </span>
             <h4 class="text-xl font-bold ml-2 text-white">Delete</h4>
           </div>
-          <p class="text-white">
-            Remove accounts as needed with ease.
-          </p>
+          <p class="text-white">Remove accounts as needed with ease.</p>
         </div>
       </a>
     </div>
   </div>
 </section>
+<script>
+  const userData = localStorage.getItem("data");
+  if (!userData) {
+    window.location.href = "/login";
+  }
+
+  fetch("/details", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: JSON.parse(userData).userName,
+      password: JSON.parse(userData).password,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.text();
+    })
+    .then((text) => {
+      console.log("Response text:", text);
+      try {
+        const data = JSON.parse(text);
+        console.log("Parsed JSON data:", data);
+        document.getElementById("id").innerText = data.user_id;
+        document.getElementById("firstname").innerText =
+          data.data.accounts.first_name || "N/A";
+        document.getElementById("lastname").innerText =
+          data.data.accounts.last_name || "N/A";
+        document.getElementById("username").innerText =
+          data.data.accounts.username || JSON.parse(userData).username;
+        document.getElementById("email").innerText =
+          data.data.accounts.email || "N/A";
+        formatedBalance = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "INR",
+        }).format(data.data.accounts.balance);
+        document.getElementById("balance").innerText = formatedBalance || "N/A";
+        document.getElementById("user_image").src =
+          data.data.accounts.image_image || JSON.parse(userData).image;
+      } catch (err) {
+        console.error("Failed to parse JSON:", err);
+      }
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err);
+    });
+</script>
 {{end}}
