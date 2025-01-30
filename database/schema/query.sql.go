@@ -50,6 +50,30 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) er
 	return err
 }
 
+const createAdmin = `-- name: CreateAdmin :exec
+INSERT INTO admin (id, first_name, last_name, username, password)
+VALUES (?, ?, ?, ?, ?)
+`
+
+type CreateAdminParams struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+}
+
+func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) error {
+	_, err := q.db.ExecContext(ctx, createAdmin,
+		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Username,
+		arg.Password,
+	)
+	return err
+}
+
 const deleteAccount = `-- name: DeleteAccount :exec
 DELETE FROM account
 WHERE id = ?
@@ -94,6 +118,49 @@ func (q *Queries) Deposit(ctx context.Context, arg DepositParams) error {
 	return err
 }
 
+const fetchData = `-- name: FetchData :many
+SELECT id, first_name, last_name, username, email, password, balance, image_url FROM account 
+WHERE EXISTS (SELECT id FROM admin WHERE admin.username = ? AND admin.password = ?) 
+LIMIT 100
+`
+
+type FetchDataParams struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) FetchData(ctx context.Context, arg FetchDataParams) ([]Account, error) {
+	rows, err := q.db.QueryContext(ctx, fetchData, arg.Username, arg.Password)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Account
+	for rows.Next() {
+		var i Account
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Username,
+			&i.Email,
+			&i.Password,
+			&i.Balance,
+			&i.ImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAccountByUsername = `-- name: GetAccountByUsername :one
 SELECT id, first_name, last_name, username, email, balance
 FROM account
@@ -124,6 +191,64 @@ func (q *Queries) GetAccountByUsername(ctx context.Context, arg GetAccountByUser
 		&i.Username,
 		&i.Email,
 		&i.Balance,
+	)
+	return i, err
+}
+
+const getAdminByUsername = `-- name: GetAdminByUsername :one
+SELECT id, first_name, last_name, username
+FROM admin
+WHERE username = ? AND password = ?
+`
+
+type GetAdminByUsernameParams struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type GetAdminByUsernameRow struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+}
+
+func (q *Queries) GetAdminByUsername(ctx context.Context, arg GetAdminByUsernameParams) (GetAdminByUsernameRow, error) {
+	row := q.db.QueryRowContext(ctx, getAdminByUsername, arg.Username, arg.Password)
+	var i GetAdminByUsernameRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+	)
+	return i, err
+}
+
+const getMaxBalanceUser = `-- name: GetMaxBalanceUser :one
+SELECT id, first_name, last_name, username, email, password, balance, image_url FROM account
+WHERE balance = (SELECT MAX(balance) FROM account) AND 
+EXISTS (SELECT id FROM admin WHERE admin.username = ? AND admin.password = ?) 
+LIMIT 1
+`
+
+type GetMaxBalanceUserParams struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) GetMaxBalanceUser(ctx context.Context, arg GetMaxBalanceUserParams) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getMaxBalanceUser, arg.Username, arg.Password)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.Balance,
+		&i.ImageUrl,
 	)
 	return i, err
 }

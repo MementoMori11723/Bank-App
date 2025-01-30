@@ -1,0 +1,11 @@
+---
+- hosts: vps
+  tasks:
+    - name: Pull the latest changes and run the makefile
+      shell: |
+        if [ ! -d $HOME/Bank-App ]; then
+          git clone https://github.com/MementoMori11723/Bank-App.git $HOME/Bank-App
+        fi
+        cd $HOME/Bank-App && git pull origin master && make stop && make
+      args:
+        executable: /bin/bash

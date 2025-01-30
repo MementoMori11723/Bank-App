@@ -15,6 +15,14 @@ type Account struct {
 	ImageUrl  string  `json:"image_url"`
 }
 
+type Admin struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+}
+
 type History struct {
 	ID        string  `json:"id"`
 	Sender    string  `json:"sender"`

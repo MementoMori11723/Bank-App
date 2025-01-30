@@ -41,6 +41,10 @@ func Create(r *http.Request) (Responce, error) {
 
 	data.ID = uuid.New().String()
 
+	if data.ImageUrl == "" {
+		data.ImageUrl = "https://api.dicebear.com/9.x/big-smile/svg?seed=" + data.Username
+	}
+
 	data.Password = encryptPassword(data.Password)
 
 	user := schema.New(db)
@@ -182,7 +186,7 @@ func Transfer(r *http.Request) (Responce, error) {
 	}
 
 	data.ID = uuid.New().String()
-  data.Timestamp = fmt.Sprintf("%s", time.Now().Format("02 Jan 2006 - 03:04:05 PM"))
+	data.Timestamp = fmt.Sprintf("%s", time.Now().Format("02 Jan 2006 - 03:04:05 PM"))
 
 	user := schema.New(db)
 	err = user.InsertTransaction(context.Background(), data)

@@ -20,6 +20,7 @@ type Data struct {
 	Password  string  `json:"password,omitempty"`
 	Email     string  `json:"email,omitempty"`
 	Amount    float64 `json:"amount,omitempty"`
+  ImageUrl  string  `json:"image_url,omitempty"`
 }
 
 func (d *Data) CheckString() (string, bool) {
