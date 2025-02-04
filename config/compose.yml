@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: config/Dockerfile
+      dockerfile: Dockerfile
     container_name: bank_app
     expose:
       - "8001"
