@@ -5,6 +5,5 @@
   "server": {
     "port": "11001"
   },
-  "log": ".app.log",
-  "server_url": "https://api-bank-app.yasasvi.site"
+  "log": ".app.log"
 }
