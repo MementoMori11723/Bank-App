@@ -3,7 +3,7 @@
     "path": "bank.db"
   },
   "server": {
-    "port": "11000"
+    "port": "11001"
   },
   "log": ".app.log"
 }

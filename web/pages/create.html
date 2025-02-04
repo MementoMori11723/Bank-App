@@ -1,5 +1,5 @@
 {{define "title"}}Create{{end}} {{define "content"}}
-<section class="bg-gray-50 py-20">
+<section class="bg-gradient-to-r from-blue-50 to-indigo-50 py-20">
   <div class="container mx-auto px-6">
     <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
       <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Sign Up</h2>
@@ -96,10 +96,11 @@
         return;
       }
 
-      const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,20}$/; 
+      const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,20}$/;
 
       if (regex.test(password) === false) {
-        errorMessage.textContent = "Password must be between 8 and 20 characters and must contain at least one uppercase letter, one lowercase letter, and one number.";
+        errorMessage.textContent =
+          "Password must be between 8 and 20 characters and must contain at least one uppercase letter, one lowercase letter, and one number.";
         errorMessage.classList.remove("hidden");
         return;
       }
@@ -119,7 +120,8 @@
       });
 
       try {
-        imageUrl = "https://api.dicebear.com/9.x/big-smile/svg?seed=" + username;
+        imageUrl =
+          "https://api.dicebear.com/9.x/big-smile/svg?seed=" + username;
         const response = await fetch("/signup", {
           method: "POST",
           headers: {
@@ -136,9 +138,9 @@
         });
 
         if (!response.ok) {
-          console.error("Network response was not ok:", response.error);
+          console.error("Network response was not ok:", response.statusText);
           console.error(response);
-          throw new Error("Network response was not ok");
+          throw new Error(response.statusText);
         }
 
         const data = await response.json();

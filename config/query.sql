@@ -39,23 +39,3 @@ DELETE FROM history
 WHERE (sender = ? OR receiver = ?)
   AND NOT EXISTS (SELECT 1 FROM account WHERE username = history.sender)
   AND NOT EXISTS (SELECT 1 FROM account WHERE username = history.receiver);
-
--- name: FetchData :many
-SELECT * FROM account 
-WHERE EXISTS (SELECT id FROM admin WHERE admin.username = ? AND admin.password = ?) 
-LIMIT 100;
-
--- name: GetAdminByUsername :one
-SELECT id, first_name, last_name, username
-FROM admin
-WHERE username = ? AND password = ?;
-
--- name: CreateAdmin :exec
-INSERT INTO admin (id, first_name, last_name, username, password)
-VALUES (?, ?, ?, ?, ?);
-
--- name: GetMaxBalanceUser :one
-SELECT * FROM account
-WHERE balance = (SELECT MAX(balance) FROM account) AND 
-EXISTS (SELECT id FROM admin WHERE admin.username = ? AND admin.password = ?) 
-LIMIT 1;

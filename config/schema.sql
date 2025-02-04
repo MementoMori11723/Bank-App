@@ -20,12 +20,3 @@ CREATE TABLE IF NOT EXISTS history (
   FOREIGN KEY (sender) REFERENCES account (username) ON DELETE CASCADE, 
   FOREIGN KEY (receiver) REFERENCES account (username) ON DELETE CASCADE 
 ) STRICT;
-
--- Admin Table
-CREATE TABLE IF NOT EXISTS admin (
-  id TEXT PRIMARY KEY,
-  first_name TEXT NOT NULL CHECK (LENGTH(first_name) > 0),
-  last_name TEXT NOT NULL CHECK (LENGTH(last_name) > 0),
-  username TEXT UNIQUE NOT NULL CHECK (LENGTH(username) >= 3),
-  password TEXT NOT NULL CHECK (LENGTH(password) >= 8)
-) STRICT;

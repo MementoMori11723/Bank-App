@@ -13,16 +13,28 @@ type ErrorResponse struct {
 
 func Responce(next func(*http.Request) (bank.Responce, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 		slog.Info("Server - Request", r.Method, r.URL.Path)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
+		token := r.Header.Get("Authorization")
+		if token == "" {
+			w.WriteHeader(http.StatusUnauthorized)
+			err := json.NewEncoder(w).Encode(ErrorResponse{Error: "Unauthorized"})
+			if err != nil {
+				slog.Error("Server - Error", "error", err.Error())
+			}
+			return
+		}
+
+		token = token[7:]
+		if !validateToken(token) {
+			w.WriteHeader(http.StatusUnauthorized)
+			err := json.NewEncoder(w).Encode(ErrorResponse{Error: "Unauthorized"})
+			if err != nil {
+				slog.Error("Server - Error", "error", err.Error())
+			}
 			return
 		}
 

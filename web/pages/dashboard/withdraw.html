@@ -1,10 +1,11 @@
 {{define "title"}}Withdraw{{end}} {{define "content"}}
-<!-- Services Section -->
-<section id="services" class="py-20 bg-gray-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Form Section -->
-    <div class="mt-12 bg-white p-6 sm:p-8 rounded-lg shadow-md max-w-md mx-auto">
-      <h4 class="text-2xl font-bold mb-6 text-center">Withdraw Money</h4>
+<!-- Deposit Section -->
+<section class="py-16 bg-gradient-to-r from-blue-50 to-indigo-50">
+  <div class="container mx-auto px-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-4xl mx-auto">
+      <h3 class="text-4xl font-bold mb-12 text-center text-gray-800">
+        Withdraw Money
+      </h3>
 
       <!-- Error Message Div -->
       <div id="errorMessage"
@@ -18,12 +19,12 @@
         <!-- Success message will be dynamically inserted here -->
       </div>
 
-      <form id="transferForm" action="/withdraw" method="POST">
+      <form id="transferForm" action="/deposit" method="POST" class="space-y-6">
         <!-- Amount Input -->
-        <div class="mb-4">
+        <div>
           <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
           <input type="number" id="amount" name="amount"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter amount" required />
         </div>
 
@@ -33,7 +34,7 @@
 
         <!-- Submit Button -->
         <button type="submit"
-          class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          class="w-full bg-blue-500 text-white py-3 px-4 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
           Withdraw Money
         </button>
       </form>
@@ -63,7 +64,9 @@
 
   function showSuccess(message) {
     const successDiv = document.getElementById("successMessage");
-    successDiv.textContent = message + " Redirecting to dashboard..." || "Success! Redirecting to dashboard...";
+    successDiv.textContent =
+      message + " Redirecting to dashboard..." ||
+      "Success! Redirecting to dashboard...";
     successDiv.classList.remove("hidden");
 
     setTimeout(() => {

@@ -20,7 +20,7 @@ type Data struct {
 	Password  string  `json:"password,omitempty"`
 	Email     string  `json:"email,omitempty"`
 	Amount    float64 `json:"amount,omitempty"`
-  ImageUrl  string  `json:"image_url,omitempty"`
+	ImageUrl  string  `json:"image_url,omitempty"`
 }
 
 func (d *Data) CheckString() (string, bool) {
@@ -55,30 +55,44 @@ func get_data(url string, data []byte) (bank.Responce, error) {
 		Timeout: time.Second * 30,
 	}
 
-	req, err := http.NewRequest(http.MethodPost, baseURL+url, bytes.NewBuffer(data))
+	req, err := http.NewRequest("POST", baseURL+url, bytes.NewBuffer(data))
 	if err != nil {
 		return bank.Responce{}, err
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	token := middleware.GenerateToken()
 
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+  slog.Info("Sending request", "method", req.Method, "url", req.URL.String(), "headers", req.Header)
 	res, err := client.Do(req)
 	if err != nil {
 		return bank.Responce{}, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+    slog.Error("Web-UI", "Error Msg", res.Status)
 	}
 
 	defer res.Body.Close()
 
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
+    slog.Error("Web-UI", "Error Msg body", err.Error())
 		return bank.Responce{}, err
 	}
+
+  slog.Info("Web-UI - Response", "%v", string(b))
 
 	var result bank.Responce
 	err = json.Unmarshal(b, &result)
 	if err != nil {
+    slog.Error("Web-UI", "Error Msg json", err.Error())
 		return bank.Responce{}, err
 	}
+
+	slog.Info("Web-UI - Response", "%v", result)
 
 	return result, nil
 }
@@ -93,11 +107,13 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "" || data.Password == "" {
+    slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+    slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}
@@ -138,21 +154,25 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.FirstName == "" || data.LastName == "" {
+    slog.Error("First name and last name are required")
 		http.Error(w, "First name and last name are required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Username == "" || data.Password == "" {
+    slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Email == "" {
+    slog.Error("Email is required")
 		http.Error(w, "Email is required", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+    slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}
@@ -244,16 +264,19 @@ func postDeposit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "" || data.Password == "" {
+    slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Amount <= 0 {
+    slog.Error("Amount must be greater than 0")
 		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+    slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}
@@ -328,16 +351,19 @@ func postWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "" || data.Password == "" {
+    slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Amount <= 0 {
+    slog.Error("Amount must be greater than 0")
 		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+    slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}
@@ -414,16 +440,19 @@ func postTransfer(w http.ResponseWriter, r *http.Request) {
 	reciver := r.PathValue("receiver")
 
 	if reciver == "" {
+    slog.Error("Receiver is required")
 		http.Error(w, "Receiver is required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Username == "" || data.Password == "" {
+    slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if data.Amount <= 0 {
+    slog.Error("Amount must be greater than 0")
 		http.Error(w, "Amount must be greater than 0", http.StatusBadRequest)
 		return
 	}
@@ -513,7 +542,7 @@ func postTransfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  res, err := get_data("/transfer", insert)
+	res, err := get_data("/transfer", insert)
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -538,11 +567,13 @@ func postHistory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "" || data.Password == "" {
+		slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+		slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}
@@ -599,11 +630,13 @@ func postDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "" || data.Password == "" {
+		slog.Error("Username and password are required")
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	if str, ok := data.CheckString(); !ok {
+		slog.Error(str)
 		http.Error(w, str, http.StatusBadRequest)
 		return
 	}

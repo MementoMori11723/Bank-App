@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: config/Dockerfile
+    container_name: bank_app
+    expose:
+      - "8001"
+      - "11001"
+    ports:
+      - "8001:8001"
+      - "11001:11001"
+    volumes:
+      - .:/app
+    working_dir: /app

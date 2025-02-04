@@ -14,7 +14,7 @@ func main() {
 	defer close_file()
 
 	web_ui := flag.Bool("web", false, "flag to run the web ui")
-	port := flag.String("port", "8080", "port to run the web ui on")
+	port := flag.String("port", "8001", "port to run the web ui on")
 	server_port := flag.String("server-port", serverPort, "port to run the server on")
 	flag.Parse()
 
@@ -22,7 +22,7 @@ func main() {
 
 	if server_url == "" {
 		go func() {
-			database.Server(*server_port, db_path)
+			database.Server(*server_port, db_path, server_url)
 		}()
 	}
 

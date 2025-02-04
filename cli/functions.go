@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bank-app/database/bank"
+	"bank-app/database/middleware"
 	"bank-app/database/schema"
 	"bytes"
 	"encoding/json"
@@ -29,6 +30,12 @@ func get_response(url string, reqBody []byte) (bank.Responce, error) {
 	if err != nil {
 		return bank.Responce{}, err
 	}
+
+  token := middleware.GenerateToken()
+
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("Accept", "application/json")
+  req.Header.Set("Authorization", "Bearer " + token)
 
 	res, err := client.Do(req)
 	if err != nil {
