@@ -114,7 +114,7 @@ func Menu(port, server_url string) {
 	}
 	baseURL = "http://localhost:" + port + "/"
   if server_url != "" {
-    baseURL = server_url
+    baseURL = server_url + "/"
   }
 	var cmd string
 	for true {
