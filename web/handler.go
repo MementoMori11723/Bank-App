@@ -59,7 +59,8 @@ func get_data(url string, data []byte) (bank.Responce, error) {
 	if err != nil {
 		return bank.Responce{}, err
 	}
-
+  
+  middleware.BaseURL(baseURL)
 	token := middleware.GenerateToken()
 
 	req.Header.Set("Content-Type", "application/json")

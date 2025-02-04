@@ -55,7 +55,7 @@ func Start(port, server_port, server_url string) {
 	baseURL = "http://localhost:" + server_port
 	if server_url != "" {
 		baseURL = server_url
-		slog.Info("Server url is set to " + server_url)
+    slog.Info("Web - UI : Server url is set to " + server_url)
 	}
 
 	mux := http.NewServeMux()

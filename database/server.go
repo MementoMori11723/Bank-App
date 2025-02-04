@@ -4,7 +4,6 @@ import (
 	"bank-app/database/bank"
 	"bank-app/database/middleware"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -25,32 +24,9 @@ var routes = map[string]func(*http.Request) (bank.Responce, error){
 }
 
 func Server(Port, db_path, server_url string) {
-	if isPortInUse(Port) {
-		slog.Info("Port " + Port + " is already in use. Checking server health...")
-		healthURL := fmt.Sprintf("http://localhost:%s/health", Port)
-		resp, err := http.Get(healthURL)
-		if err == nil && resp.StatusCode == http.StatusOK {
-			slog.Info("Server is already running and healthy. Exiting...")
-			middleware.BaseURL("http://localhost:" + Port)
-			return
-		} else {
-			slog.Error("Port is in use, but server is not healthy or /health endpoint is not reachable.", "error", err)
-			os.Exit(1)
-		}
-	}
-
-	if server_url != "" {
-		slog.Info("Server URL is set to " + server_url + ". Checking server health...")
-		healthURL := fmt.Sprintf("%s/health", server_url)
-		resp, err := http.Get(healthURL)
-		if err == nil && resp.StatusCode == http.StatusOK {
-			slog.Info("Server is already running and healthy. Exiting...")
-			middleware.BaseURL(server_url)
-			return
-		} else {
-			slog.Error("Server URL is set, but server is not healthy or /health endpoint is not reachable.", "error", err)
-			os.Exit(1)
-		}
+	if isPortInUse(Port) || server_url != "" {
+    slog.Info("Port is already in use or Server URL is set!")
+    return
 	}
 
 	go bank.DB_init(db_path)

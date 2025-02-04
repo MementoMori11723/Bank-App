@@ -31,6 +31,7 @@ func get_response(url string, reqBody []byte) (bank.Responce, error) {
 		return bank.Responce{}, err
 	}
 
+  middleware.BaseURL(baseURL)
   token := middleware.GenerateToken()
 
   req.Header.Set("Content-Type", "application/json")

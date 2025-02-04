@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"math/rand"
 	"net/http"
@@ -27,7 +26,6 @@ var secretKey int64
 
 func init() {
 	secretKey = rand.Int63()
-  log.Println("Secret Key in init function:", secretKey)
 }
 
 func GetSecretKey() string {
@@ -97,6 +95,5 @@ func BaseURL(baseURL string) {
 		if err != nil {
 			slog.Error(err.Error())
 		}
-    log.Println("Secret Key in BaseURL function:", secretKey)
 	}
 }
