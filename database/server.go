@@ -26,17 +26,20 @@ var routes = map[string]func(*http.Request) (bank.Responce, error){
 func Server(Port, db_path, server_url string) {
 	if isPortInUse(Port) {
 		healthCheckURL := "http://localhost:" + Port + "/health"
-    slog.Info("Checking if server is already running")
+		slog.Info("Checking if server is already running")
 		res, err := http.Get(healthCheckURL)
 		if err == nil && res.StatusCode == http.StatusOK {
 			return
 		}
-    slog.Error(err.Error())
+		slog.Error(err.Error())
 	}
 
-	bank.DB_init(db_path)
+	if server_url == "" {
+		bank.DB_init(db_path)
+	}
+
 	mux := http.NewServeMux()
-  slog.Info("Server is starting")
+	slog.Info("Server is starting")
 
 	for route, handler := range routes {
 		mux.HandleFunc("POST "+route,
