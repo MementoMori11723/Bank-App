@@ -7,10 +7,16 @@ services:
     expose:
       - "8001"
       - "11001"
+    networks:
+      - deploy_net
     volumes:
       - deploy_sqlite_dir:/data
     working_dir: /app
-  
+
+networks:
+  deploy_net:
+    external: true
+
 volumes:
   deploy_sqlite_dir: 
     external: true
