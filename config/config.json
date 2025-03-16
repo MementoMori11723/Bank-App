@@ -1,6 +1,6 @@
 {
   "database": {
-    "path": "bank.db"
+    "path": "/data/bank.db"
   },
   "server": {
     "port": "11001"

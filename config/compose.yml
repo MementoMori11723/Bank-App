@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: config/Dockerfile
+    container_name: bank-app
+    expose:
+      - "8001"
+      - "11001"
+    volumes:
+      - sqlite_dir:/data
+    working_dir: /app
+  
+volumes:
+  sqlite_dir: 
+    external: true

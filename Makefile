@@ -7,11 +7,10 @@ help:
 	@echo "  make sql     - Generate sql functions"
 start:
 	@echo "Running docker-compose"
-	@docker-compose -f compose.yml build
-	@docker-compose -f compose.yml up -d
+	@docker-compose -f config/compose.yml -p bank-app up --build -d
 stop:
 	@echo "Stopping docker-compose"
-	@docker-compose -f compose.yml down
+	@docker-compose -f config/compose.yml -p bank-app down
 run:
 	@echo "Running the Go application"
 	@go run .
