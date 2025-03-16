@@ -8,9 +8,9 @@ services:
       - "8001"
       - "11001"
     volumes:
-      - sqlite_dir:/data
+      - deploy_sqlite_dir:/data
     working_dir: /app
   
 volumes:
-  sqlite_dir: 
+  deploy_sqlite_dir: 
     external: true
